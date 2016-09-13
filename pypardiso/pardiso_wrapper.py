@@ -1,17 +1,12 @@
-
 # coding: utf-8
 
 import sys
 import ctypes
 import warnings
-import functools
 import mkl
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import SparseEfficiencyWarning
-
-
-__all__ = ['PyPardisoSolver', 'spsolve', 'factorized']
 
 
 class PyPardisoSolver:
@@ -56,12 +51,14 @@ class PyPardisoSolver:
     """
     
     def __init__(self, mtype=11, phase=13):
+        
         if sys.platform == 'darwin':
             libmkl_core = ctypes.CDLL('libmkl_core.dylib')
         elif sys.platform == 'win32':
             libmkl_core = ctypes.CDLL('mkl_core.dll')
         else:
             libmkl_core = ctypes.CDLL('libmkl_core.so')
+        
         
         self._mkl_pardiso = libmkl_core.mkl_pds_lp64_pardiso
         
@@ -86,6 +83,7 @@ class PyPardisoSolver:
         A: sparse square CSR matrix (scipy.sparse.csr.csr_matrix)
            other matrix types will be converted to CSR
         """
+        
         self.factorized_A = A
         A = self._check_A(A)
         self.set_phase(12)
@@ -107,6 +105,7 @@ class PyPardisoSolver:
         x: numpy ndarray
            solution of the system of linear equations, same shape as b
         """
+        
         if self.factorized_A is A:
             self.set_phase(33)
         else:
@@ -144,6 +143,10 @@ class PyPardisoSolver:
         if b.ndim == 1:
             b = b.reshape(len(b), 1)
         
+        # pardiso expects fortran (column-major) order if b is a matrix
+        if b.ndim == 2:
+            b = np.asfortranarray(b)
+        
         if b.shape[0] != A.shape[0]:
             raise ValueError("Dimension mismatch: Matrix A {} and vector/matrix b {}".format(A.shape, b.shape))
             
@@ -163,6 +166,7 @@ class PyPardisoSolver:
         
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
+        
 
         self._mkl_pardiso(self.pt.ctypes.data_as(c_int32_p), # pt
                           ctypes.byref(ctypes.c_int32(1)), # maxfct
@@ -183,8 +187,10 @@ class PyPardisoSolver:
         
         if pardiso_error.value != 0:
             raise PyPardisoError(pardiso_error.value)
+        elif x.shape[1] == 1:
+            return x.ravel() # return 1-dim array like scipy
         else:
-            return x
+            return np.ascontiguousarray(x) # change memory-layout back from fortran to c order
         
         
     def get_iparms(self):
@@ -236,55 +242,6 @@ class PyPardisoSolver:
         self.phase = phase
 
 
-# pypardsio_solver is used for the 'spsolve' and 'factorized' functions. Python crashes on windows if multiple 
-# instances of PyPardisoSolver make calls to the Pardiso library
-pypardiso_solver = PyPardisoSolver()
-
-
-def spsolve(A, b, factorize=True):
-    """
-    This function mimics scipy.sparse.linalg.spsolve, but uses the Pardiso solver instead of SuperLU/UMFPACK
-    
-        solve Ax=b for x
-        
-        --- Parameters ---
-        A: sparse square CSR matrix (scipy.sparse.csr.csr_matrix)
-           other matrix types will be converted to CSR
-        b: numpy ndarray
-           right-hand side(s), b.shape[0] needs to be the same as A.shape[0]
-        factorize: boolean, default True
-                   matrix A is factorized by default, so the factorization can be reused
-           
-        --- Returns ---
-        x: numpy ndarray
-           solution of the system of linear equations, same shape as b
-           
-        --- Notes ---
-        the computation time increases only minimally if the factorization and the solve phase are carried out 
-        in two steps, therefore it is factorized by default. Subsequent calls to spsolve with the same matrix A 
-        will be drastically faster
-    """
-    if factorize and not pypardiso_solver.factorized_A is A:
-        pypardiso_solver.factorize(A)
-    x = pypardiso_solver.solve(A, b)
-    return x
-
-
-def factorized(A):
-    """
-    This function mimics scipy.sparse.linalg.factorized, but uses the Pardiso solver instead of SuperLU/UMFPACK
-    
-        --- Parameters ---
-        A: sparse square CSR matrix (scipy.sparse.csr.csr_matrix)
-           other matrix types will be converted to CSR
-           
-        --- Returns ---
-        solve_b: callable 
-        		 a vector/matrix b passed to this callable returns the solution to Ax=b
-    """
-    pypardiso_solver.factorize(A)
-    solve_b = functools.partial(pypardiso_solver.solve, A)
-    return solve_b
 
 
 class PyPardisoError(Exception):
@@ -296,3 +253,4 @@ class PyPardisoError(Exception):
         return ('The Pardiso solver failed with error code {}. '
                 'See Pardiso documentation for details.'.format(self.value))
 
+        

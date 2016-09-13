@@ -1,21 +1,18 @@
+# coding: utf-8
+
 from setuptools import setup
 
 setup(
     name='pypardiso',
-    version="0.1",
+    version="0.1.0",
     packages=['pypardiso'],
     author="Adrian Haas",
     author_email="adrian.pypardiso@gmail.com",
-    license=open('LICENSE.txt').read(),
-    install_requires=[
-        'mkl'
-        'mkl-service'
-        'numpy'
-        'scipy'
-    ],
+    license=open('LICENSE.txt', encoding='utf8').read(),
+    install_requires=['numpy', 'scipy'],
     url="https://github.com/haasad/PyPardisoProject",
-    long_description=open('README.rst').read(),
-    description='OPython interface to the Intel MKL Pardiso library to solve large sparse linear systems of equations',
+    long_description=open('README.md', encoding='utf8').read(),
+    description='Python interface to the Intel MKL Pardiso library to solve large sparse linear systems of equations',
     classifiers=[
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
