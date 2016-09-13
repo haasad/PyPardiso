@@ -3,7 +3,6 @@ import functools
 from .pardiso_wrapper import PyPardisoSolver
 
 
-
 # pypardsio_solver is used for the 'spsolve' and 'factorized' functions. Python crashes on windows if multiple 
 # instances of PyPardisoSolver make calls to the Pardiso library
 pypardiso_solver = PyPardisoSolver()
