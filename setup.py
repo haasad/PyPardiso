@@ -9,7 +9,7 @@ setup(
     author="Adrian Haas",
     author_email="adrian.pypardiso@gmail.com",
     license=open('LICENSE.txt', encoding='utf8').read(),
-    install_requires=['numpy', 'scipy'],
+    #install_requires=['numpy', 'scipy'],  # this breaks conda build, and is probably not necessary anyway
     url="https://github.com/haasad/PyPardisoProject",
     long_description=open('README.md', encoding='utf8').read(),
     description='Python interface to the Intel MKL Pardiso library to solve large sparse linear systems of equations',
