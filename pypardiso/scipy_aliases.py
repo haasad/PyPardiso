@@ -8,7 +8,7 @@ from .pardiso_wrapper import PyPardisoSolver
 pypardiso_solver = PyPardisoSolver()
 
 
-def spsolve(A, b, factorize=True):
+def spsolve(A, b, *args, factorize=True, solver=pypardiso_solver, **kwargs):
     """
     This function mimics scipy.sparse.linalg.spsolve, but uses the Pardiso solver instead of SuperLU/UMFPACK
     
@@ -31,13 +31,16 @@ def spsolve(A, b, factorize=True):
         in two steps, therefore it is factorized by default. Subsequent calls to spsolve with the same matrix A 
         will be drastically faster
     """
-    if factorize and not pypardiso_solver.factorized_A is A:
+    A = solver._check_A(A)
+    if factorize and not solver._is_already_factorized(A):
         pypardiso_solver.factorize(A)
+        
     x = pypardiso_solver.solve(A, b)
-    return x
+    
+    return x.squeeze() # scipy always returns vectors with shape (n,) indstead of (1,n)
 
 
-def factorized(A):
+def factorized(A, *args, solver=pypardiso_solver, **kwargs):
     """
     This function mimics scipy.sparse.linalg.factorized, but uses the Pardiso solver instead of SuperLU/UMFPACK
     
@@ -47,9 +50,17 @@ def factorized(A):
            
         --- Returns ---
         solve_b: callable 
-        		 a vector/matrix b passed to this callable returns the solution to Ax=b
+                 a vector/matrix b passed to this callable returns the solution to Ax=b
+        
+        --- Notes ---
+        The returned callable will store a copy of matrix A. This ensures correct results even when the solver
+        was used for other tasks in between calls to the returned callable. The factorization is however not 
+        stored and the first call will take longer.
+                 
     """
-    pypardiso_solver.factorize(A)
-    solve_b = functools.partial(pypardiso_solver.solve, A)
+    A = solver._check_A(A)
+    solver.factorize(A)
+    solve_b = functools.partial(solver.solve, A.copy())
+    
     return solve_b
 
