@@ -1,13 +1,10 @@
 # coding: utf-8
 
-
 import pytest
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import SparseEfficiencyWarning
 
-
-import pypardiso
 from pypardiso.pardiso_wrapper import PyPardisoSolver, PyPardisoError, PyPardisoWarning
 
 ps = PyPardisoSolver()
@@ -179,5 +176,54 @@ def test_input_b_wrong_shape():
         basic_solve(A,b)
 
 
+def test_factorization_is_used():
+    ps.remove_stored_factorization()
+    A, b = create_test_A_b()
+    x1 = ps.solve(A,b)
+    assert ps.phase == 13
+    assert ps.factorized_A.shape == (0,0)
+    ps.factorize(A)
+    x2 = ps.solve(A,b)
+    assert ps.phase == 33
+    x3 = ps._call_pardiso(sp.csr_matrix(A.shape), b)
+    np.testing.assert_array_equal(x1, x2)
+    np.testing.assert_array_equal(x2, x3)
 
 
+def test_no_stale_factorization_used_array_equal():
+    ps.remove_stored_factorization()
+    A, b = create_test_A_b()
+    ps.factorize(A)
+    x1 = ps.solve(A,b)
+    assert ps.phase == 33
+    A[4,0] = 27
+    x2 = ps.solve(A,b)
+    assert ps.phase == 13
+    assert not np.allclose(x1, x2)
+
+
+def test_csr_hashing():
+    ps.remove_stored_factorization()
+    A, b = create_test_A_b()
+    assert sp.isspmatrix(ps.factorized_A)
+    ps.size_limit_storage = 0
+    ps.factorize(A)
+    assert type(ps.factorized_A) == str
+    x = ps.solve(A,b)
+    assert ps.phase == 33
+    ps.size_limit_storage = 5e7
+
+
+def test_no_stale_factorization_used_hashing():
+    ps.remove_stored_factorization()
+    A, b = create_test_A_b()
+    ps.size_limit_storage = 0
+    ps.factorize(A)
+    assert type(ps.factorized_A) == str
+    x1 = ps.solve(A,b)
+    assert ps.phase == 33
+    A[4,0] = 27
+    x2 = ps.solve(A,b)
+    assert ps.phase == 13
+    assert not np.allclose(x1, x2)
+    ps.size_limit_storage = 5e7
