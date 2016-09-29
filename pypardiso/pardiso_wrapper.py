@@ -172,7 +172,7 @@ class PyPardisoSolver:
             raise ValueError('Matrix A is singular, because it contains empty row(s)')
         
         if A.dtype != np.float64:
-            if A.dtype in [np.float16, np.float32, np.float128, np.int16, np.int32, np.int64]:
+            if A.dtype in [np.float16, np.float32, np.int16, np.int32, np.int64]:
                 warnings.warn("Matrix A's data type was converted from {} to float64".format(str(A.dtype)), 
                               PyPardisoWarning)
                 A = A.astype(np.float64)
@@ -196,7 +196,7 @@ class PyPardisoSolver:
             raise ValueError("Dimension mismatch: Matrix A {} and array b {}".format(A.shape, b.shape))
             
         if b.dtype != np.float64:
-            if b.dtype in [np.float16, np.float32, np.float128, np.int16, np.int32, np.int64]:
+            if b.dtype in [np.float16, np.float32, np.int16, np.int32, np.int64]:
                 warnings.warn("Array b's data type was converted from {} to float64".format(str(b.dtype)), 
                               PyPardisoWarning)
                 b = b.astype(np.float64)
