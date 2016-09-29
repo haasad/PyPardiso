@@ -116,7 +116,7 @@ def test_input_A_empty_col():
 
 def test_input_A_dtypes():
     A, b = create_test_A_b()
-    for dt in [np.float16, np.float32, np.float128, np.int16, np.int32, np.int64]:
+    for dt in [np.float16, np.float32, np.int16, np.int32, np.int64]:
         Adt = A.astype(dt)
         with pytest.warns(PyPardisoWarning):
             basic_solve(Adt, b)
@@ -154,7 +154,7 @@ def test_input_b_shape():
 
 def test_input_b_dtypes():
     A, b = create_test_A_b()
-    for dt in [np.float16, np.float32, np.float128, np.int16, np.int32, np.int64]:
+    for dt in [np.float16, np.float32, np.int16, np.int32, np.int64]:
         bdt = b.astype(dt)
         with pytest.warns(PyPardisoWarning):
             basic_solve(A, bdt)
