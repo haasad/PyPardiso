@@ -11,7 +11,6 @@ from pypardiso.pardiso_wrapper import PyPardisoSolver, PyPardisoError, PyPardiso
 from pypardiso.scipy_aliases import pypardiso_solver, spsolve, factorized
 
 ps = pypardiso_solver
-np.random.seed(27)
 
 
 def create_test_A_b_small(matrix=False, sort_indices=True):
@@ -49,6 +48,7 @@ def create_test_A_b_small(matrix=False, sort_indices=True):
 
 
 def create_test_A_b(n=1000, density=0.5, matrix=False, sort_indices=True):
+    np.random.seed(27)
     A = sp.csr_matrix(sp.rand(n, n, density) + sp.eye(n))
     if matrix:
         b = np.random.rand(n,5)
