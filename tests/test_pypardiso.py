@@ -46,6 +46,7 @@ def create_test_A_b_small(matrix=False, sort_indices=True):
     else:
         return A, b[:,[0]]
 
+
 def create_test_A_b(n=1000, density=0.5, matrix=False, sort_indices=True):
     A = sp.csr_matrix(sp.rand(n, n, density) + sp.eye(n))
     if matrix:
@@ -86,12 +87,12 @@ def test_input_A_non_sparse():
         basic_solve(A,b)
 
 
-#def test_input_A_other_sparse():
-#    A, b = create_test_A_b()
-#    for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']:
-#        Aother = A.asformat(f)
-#        with pytest.warns(SparseEfficiencyWarning):
-#            basic_solve(Aother, b)
+def test_input_A_other_sparse():
+    A, b = create_test_A_b()
+    for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']:
+        Aother = A.copy().asformat(f)
+        with pytest.warns(SparseEfficiencyWarning):
+            basic_solve(Aother, b)
 
 
 def test_input_A_empty_row_and_col():
@@ -128,12 +129,12 @@ def test_input_A_empty_col():
 def test_input_A_dtypes():
     A, b = create_test_A_b()
     for dt in [np.float16, np.float32, np.int16, np.int32, np.int64]:
-        Adt = A.astype(dt)
+        Adt = A.copy().astype(dt)
         with pytest.warns(PyPardisoWarning):
             basic_solve(Adt, b)
             
-    for dt in [np.complex64, np.complex128, np.complex128, np.uint16, np.uint32, np.uint64]:
-        Adt = A.astype(dt)
+    for dt in [np.complex64, np.complex128, np.uint16, np.uint32, np.uint64]:
+        Adt = A.copy().astype(dt)
         with pytest.raises(TypeError):
             basic_solve(Adt, b)
 
