@@ -13,7 +13,6 @@ matrix:
 
 install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update;fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install valgrind;fi
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - if [ $TRAVIS_OS_NAME == "osx" ]; then echo "Running on OS X"; else echo "Running on Linux"; fi
@@ -41,11 +40,8 @@ install:
 
 script:
   # Your test script goes here
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      py.test --valgrind;
-    else
-      py.test;
-    fi
+  py.test
+  
 
 notifications:
   email:
