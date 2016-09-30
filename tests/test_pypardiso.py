@@ -12,7 +12,6 @@ from pypardiso.scipy_aliases import pypardiso_solver, spsolve, factorized
 
 ps = pypardiso_solver
 
-
 def create_test_A_b_small(matrix=False, sort_indices=True):
     """
     --- A ---
@@ -63,14 +62,14 @@ def basic_solve(A,b):
     np.testing.assert_array_almost_equal(A*x, b)
 
 
-#def test_bvector_smoketest():
-#    A, b = create_test_A_b()
-#    basic_solve(A,b)
+def test_bvector_smoketest():
+    A, b = create_test_A_b()
+    basic_solve(A,b)
 
 
-#def test_bmatrix_smoketest():
-#    A, b = create_test_A_b(matrix=True)
-#    basic_solve(A,b)
+def test_bmatrix_smoketest():
+    A, b = create_test_A_b(matrix=True)
+    basic_solve(A,b)
 
 
 def test_input_A_unsorted_indices():
@@ -90,8 +89,9 @@ def test_input_A_non_sparse():
 
 def test_input_A_other_sparse():
     A, b = create_test_A_b()
-    Aother_list = [A.copy().asformat(f) for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']]
-    for Aother in Aother_list:
+    Aother_list = [(f, A.copy().asformat(f)) for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']]
+    for f, Aother in Aother_list:
+        print(f)
         with pytest.warns(SparseEfficiencyWarning):
             basic_solve(Aother, b)
 
