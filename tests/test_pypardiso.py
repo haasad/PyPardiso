@@ -89,7 +89,7 @@ def test_input_A_non_sparse():
 
 def test_input_A_other_sparse():
     A, b = create_test_A_b()
-    Aother_list = [A.asformat(f) for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']]
+    Aother_list = [A.copy().asformat(f) for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']]
     for Aother in Aother_list:
         with pytest.warns(SparseEfficiencyWarning):
             basic_solve(Aother, b)
