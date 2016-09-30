@@ -63,14 +63,14 @@ def basic_solve(A,b):
     np.testing.assert_array_almost_equal(A*x, b)
 
 
-def test_bvector_smoketest():
-    A, b = create_test_A_b()
-    basic_solve(A,b)
+#def test_bvector_smoketest():
+#    A, b = create_test_A_b()
+#    basic_solve(A,b)
 
 
-def test_bmatrix_smoketest():
-    A, b = create_test_A_b(matrix=True)
-    basic_solve(A,b)
+#def test_bmatrix_smoketest():
+#    A, b = create_test_A_b(matrix=True)
+#    basic_solve(A,b)
 
 
 def test_input_A_unsorted_indices():
