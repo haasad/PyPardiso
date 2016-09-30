@@ -293,3 +293,11 @@ def test_factorized_modified_A():
 def test_all_ran():
     # make sure that there is no memory corruption in the last test
     assert True
+
+
+def test_free_solver_memory():
+    A = sp.csr_matrix((1,1))
+    b = np.ones(1)
+    ps.set_phase(0)
+    ps._call_pardiso(A,b)
+
