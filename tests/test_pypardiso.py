@@ -13,45 +13,45 @@ from pypardiso.scipy_aliases import pypardiso_solver, spsolve, factorized
 ps = pypardiso_solver
 
 
-#def create_test_A_b(matrix=False, sort_indices=True):
-#    """
-#    --- A ---
-#    scipy.sparse.csr.csr_matrix, float64
-#    matrix([[5, 1, 0, 0, 0],
-#            [0, 6, 2, 0, 0],
-#            [0, 0, 7, 3, 0],
-#            [0, 0, 0, 8, 4],
-#            [0, 0, 0, 0, 9]])
-#    --- b ---
-#    np.ndarray, float64
-#    array([[ 1],
-#           [ 4],
-#           [ 7],
-#           [10],
-#           [13]])
-#    or       
-#    array([[ 1,  2,  3],
-#           [ 4,  5,  6],
-#           [ 7,  8,  9],
-#           [10, 11, 12],
-#           [13, 14, 15]])
-#    
-#    """
-#    A = sp.spdiags(np.arange(10, dtype=np.float64).reshape(2,5), [1, 0], 5, 5, format='csr')
-#    if sort_indices:
-#        A.sort_indices()
-#    b = np.arange(1,16, dtype=np.float64).reshape(5,3)
-#    if matrix:
-#        return A, b
-#    else:
-#        return A, b[:,[0]]
+def create_test_A_b_small(matrix=False, sort_indices=True):
+    """
+    --- A ---
+    scipy.sparse.csr.csr_matrix, float64
+    matrix([[5, 1, 0, 0, 0],
+            [0, 6, 2, 0, 0],
+            [0, 0, 7, 3, 0],
+            [0, 0, 0, 8, 4],
+            [0, 0, 0, 0, 9]])
+    --- b ---
+    np.ndarray, float64
+    array([[ 1],
+           [ 4],
+           [ 7],
+           [10],
+           [13]])
+    or       
+    array([[ 1,  2,  3],
+           [ 4,  5,  6],
+           [ 7,  8,  9],
+           [10, 11, 12],
+           [13, 14, 15]])
+    
+    """
+    A = sp.spdiags(np.arange(10, dtype=np.float64).reshape(2,5), [1, 0], 5, 5, format='csr')
+    if sort_indices:
+        A.sort_indices()
+    b = np.arange(1,16, dtype=np.float64).reshape(5,3)
+    if matrix:
+        return A, b
+    else:
+        return A, b[:,[0]]
 
 def create_test_A_b(n=1000, density=0.5, matrix=False, sort_indices=True):
     A = sp.csr_matrix(sp.rand(n, n, density) + sp.eye(n))
     if matrix:
-        b = np.random.rand(n,1)
-    else:
         b = np.random.rand(n,5)
+    else:
+        b = np.random.rand(n,1)
     
     return A, b
 
@@ -72,7 +72,7 @@ def test_bmatrix_smoketest():
 
 
 def test_input_A_unsorted_indices():
-    A, b = create_test_A_b(sort_indices=False)
+    A, b = create_test_A_b_small(sort_indices=False)
     assert not A.has_sorted_indices
     assert ps._check_A(A).has_sorted_indices
     basic_solve(A,b)
@@ -98,6 +98,7 @@ def test_input_A_empty_row_and_col():
     A, b = create_test_A_b()
     A = A.tolil()
     A[0,:] = 0
+    A[:,0] = 0
     A = A.tocsr()
     with pytest.raises(ValueError):
         basic_solve(A, b)
@@ -117,6 +118,7 @@ def test_input_A_empty_col():
     A, b = create_test_A_b()
     A = A.tolil()
     A[0,:] = 0
+    A[:,0] = 0
     A[0, 1] = 1
     A = A.tocsr()
     with pytest.warns(PyPardisoWarning):
@@ -156,9 +158,9 @@ def test_input_b_shape():
     A, b = create_test_A_b()
     x_array = ps.solve(A,b)
     assert x_array.shape == b.shape
-    x_vector = ps.solve(A, b.ravel())
-    assert x_vector.shape == b.ravel().shape
-    np.testing.assert_array_equal(x_array.ravel(), x_vector)
+    x_vector = ps.solve(A, b.squeeze())
+    assert x_vector.shape == b.squeeze().shape
+    np.testing.assert_array_equal(x_array.squeeze(), x_vector)
 
 
 def test_input_b_dtypes():
