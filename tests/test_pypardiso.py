@@ -47,7 +47,7 @@ def create_test_A_b_small(matrix=False, sort_indices=True):
         return A, b[:,[0]]
 
 
-def create_test_A_b(n=1000, density=0.1, matrix=False, sort_indices=True):
+def create_test_A_b(n=1000, density=0.05, matrix=False, sort_indices=True):
     np.random.seed(27)
     A = sp.csr_matrix(sp.rand(n, n, density) + sp.eye(n))
     if matrix:
