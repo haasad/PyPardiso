@@ -30,7 +30,11 @@ install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy mkl-service pytest;
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      conda create -q -n test-environment python=3.5 numpy scipy mkl-service pytest;
+    else
+      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy mkl-service pytest;
+    fi
   - source activate test-environment
   - python setup.py install
 

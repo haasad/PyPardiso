@@ -80,6 +80,7 @@ def test_input_A_unsorted_indices():
 
 
 def test_input_A_non_sparse():
+    print('test_input_A_non_sparse')
     A, b = create_test_A_b(n=100)
     A = A.todense()
     assert not sp.issparse(A)
@@ -94,6 +95,7 @@ def test_input_A_other_sparse():
         print(f)
         with pytest.warns(SparseEfficiencyWarning):
             basic_solve(Aother, b)
+        print('worked')
 
 
 def test_input_A_empty_row_and_col():
