@@ -89,8 +89,8 @@ def test_input_A_non_sparse():
 
 def test_input_A_other_sparse():
     A, b = create_test_A_b()
-    for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']:
-        Aother = A.copy().asformat(f)
+    Aother_list = [A.asformat(f) for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']]
+    for Aother in Aother_list:
         with pytest.warns(SparseEfficiencyWarning):
             basic_solve(Aother, b)
 
@@ -128,15 +128,15 @@ def test_input_A_empty_col():
 
 def test_input_A_dtypes():
     A, b = create_test_A_b()
-    for dt in [np.float16, np.float32, np.int16, np.int32, np.int64]:
-        Adt = A.copy().astype(dt)
+    Adt_valid_list = [A.astype(dt) for dt in [np.float16, np.float32, np.int16, np.int32, np.int64]]
+    for Adt_valid in Adt_valid_list:
         with pytest.warns(PyPardisoWarning):
-            basic_solve(Adt, b)
-            
-    for dt in [np.complex64, np.complex128, np.uint16, np.uint32, np.uint64]:
-        Adt = A.copy().astype(dt)
+            basic_solve(Adt_valid, b)
+    
+    Adt_invalid_list = [A.astype(dt) for dt in [np.complex64, np.complex128, np.uint16, np.uint32, np.uint64]]        
+    for Adt_invalid in Adt_invalid_list:
         with pytest.raises(TypeError):
-            basic_solve(Adt, b)
+            basic_solve(Adt_invalid, b)
 
 
 def test_input_A_nonsquare():
@@ -288,3 +288,7 @@ def test_factorized_modified_A():
     assert pypardiso_solver.phase == 13 # this is not the desired situation, because now every call to Afact
                                         # will be carried out with phase 13, ie pardiso will factorize everytime
                                         # -> needs to be documented in list of caveats or similar
+
+def test_all_ran():
+    # make sure that there is no memory corruption in the last test
+    assert True
