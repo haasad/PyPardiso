@@ -1,6 +1,5 @@
 # coding: utf-8
 
-import time
 import pytest
 import numpy as np
 import scipy.sparse as sp
@@ -77,7 +76,6 @@ def test_input_A_unsorted_indices():
     assert not A.has_sorted_indices
     assert ps._check_A(A).has_sorted_indices
     basic_solve(A,b)
-    time.sleep(3)
 
 
 def test_input_A_non_sparse():
@@ -88,12 +86,12 @@ def test_input_A_non_sparse():
         basic_solve(A,b)
 
 
-def test_input_A_other_sparse():
-    A, b = create_test_A_b()
-    for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']:
-        Aother = A.asformat(f)
-        with pytest.warns(SparseEfficiencyWarning):
-            basic_solve(Aother, b)
+#def test_input_A_other_sparse():
+#    A, b = create_test_A_b()
+#    for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']:
+#        Aother = A.asformat(f)
+#        with pytest.warns(SparseEfficiencyWarning):
+#            basic_solve(Aother, b)
 
 
 def test_input_A_empty_row_and_col():
