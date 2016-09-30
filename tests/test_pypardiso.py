@@ -11,6 +11,7 @@ from pypardiso.pardiso_wrapper import PyPardisoSolver, PyPardisoError, PyPardiso
 from pypardiso.scipy_aliases import pypardiso_solver, spsolve, factorized
 
 ps = pypardiso_solver
+np.random.seed(27)
 
 
 def create_test_A_b_small(matrix=False, sort_indices=True):
