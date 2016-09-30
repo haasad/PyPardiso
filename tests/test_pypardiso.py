@@ -47,7 +47,7 @@ def create_test_A_b_small(matrix=False, sort_indices=True):
         return A, b[:,[0]]
 
 
-def create_test_A_b(n=1000, density=0.5, matrix=False, sort_indices=True):
+def create_test_A_b(n=1000, density=0.1, matrix=False, sort_indices=True):
     np.random.seed(27)
     A = sp.csr_matrix(sp.rand(n, n, density) + sp.eye(n))
     if matrix:
@@ -81,19 +81,19 @@ def test_input_A_unsorted_indices():
 
 
 def test_input_A_non_sparse():
-    A, b = create_test_A_b()
+    A, b = create_test_A_b(n=100)
     A = A.todense()
     assert not sp.issparse(A)
     with pytest.warns(SparseEfficiencyWarning):
         basic_solve(A,b)
 
 
-#def test_input_A_other_sparse():
-#    A, b = create_test_A_b()
-#    Aother_list = [A.copy().asformat(f) for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']]
-#    for Aother in Aother_list:
-#        with pytest.warns(SparseEfficiencyWarning):
-#            basic_solve(Aother, b)
+def test_input_A_other_sparse():
+    A, b = create_test_A_b()
+    Aother_list = [A.copy().asformat(f) for f in ['bsr', 'coo', 'csc', 'dia', 'dok', 'lil']]
+    for Aother in Aother_list:
+        with pytest.warns(SparseEfficiencyWarning):
+            basic_solve(Aother, b)
 
 
 def test_input_A_empty_row_and_col():
