@@ -100,31 +100,25 @@ def test_input_A_other_sparse():
 
 def test_input_A_empty_row_and_col():
     A, b = create_test_A_b()
-    A = A.tolil()
     A[0,:] = 0
     A[:,0] = 0
-    A = A.tocsr()
     with pytest.raises(ValueError):
         basic_solve(A, b)
 
 
 def test_input_A_empty_row():
     A, b = create_test_A_b()
-    A = A.tolil()
     A[0,:] = 0
     A[1, 0] = 1
-    A = A.tocsr()
     with pytest.raises(ValueError):
         basic_solve(A,b)
 
 
 def test_input_A_empty_col():
     A, b = create_test_A_b()
-    A = A.tolil()
     A[0,:] = 0
     A[:,0] = 0
     A[0, 1] = 1
-    A = A.tocsr()
     with pytest.warns(PyPardisoWarning):
         x = ps.solve(A,b)
 
