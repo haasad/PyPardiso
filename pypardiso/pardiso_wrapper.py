@@ -211,9 +211,8 @@ class PyPardisoSolver:
         A_ia = A.indptr + 1
         A_ja = A.indices + 1
         x = np.zeros_like(b)
-        #pardiso_error = ctypes.c_int32(0)
-        self.pardiso_error = 0
-
+        pardiso_error = ctypes.c_int32(0)
+        
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
         
@@ -233,10 +232,10 @@ class PyPardisoSolver:
                           ctypes.byref(ctypes.c_int32(self.msglvl)), # msg-level -> 1: statistical info is printed
                           b.ctypes.data_as(c_float64_p), # b -> right-hand side vector/matrix
                           x.ctypes.data_as(c_float64_p), # x -> output
-                          ctypes.byref(ctypes.c_int32(self.pardiso_error))) # pardiso error
+                          ctypes.byref(pardiso_error)) # pardiso error
         
-        if self.pardiso_error != 0:
-            raise PyPardisoError(self.pardiso_error)
+        if pardiso_error.value != 0:
+            raise PyPardisoError(pardiso_error.value)
         else:
             return np.ascontiguousarray(x) # change memory-layout back from fortran to c order
             
