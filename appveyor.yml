@@ -21,4 +21,4 @@ install:
 
 test_script:
   - "python setup.py -q install"
-  - "py.test -s"
+  - "py.test"

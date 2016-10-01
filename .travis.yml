@@ -40,7 +40,7 @@ install:
 
 script:
   # Your test script goes here
-  py.test -s
+  py.test
   
 
 notifications:
