@@ -148,11 +148,10 @@ def test_input_A_nonsquare():
 
 def test_input_b_sparse():
     A, b = create_test_A_b()
-    for sparse_format in [sp.csr_matrix, sp.csc_matrix, sp.lil_matrix, sp.coo_matrix]:
-        bsparse = sparse_format(b)
-        with pytest.warns(SparseEfficiencyWarning):
-            x = ps.solve(A, bsparse)
-            np.testing.assert_array_almost_equal(A*x, b)
+    bsparse = sp.csr_matrix(b)
+    with pytest.warns(SparseEfficiencyWarning):
+        x = ps.solve(A, bsparse)
+        np.testing.assert_array_almost_equal(A*x, b)
 
 
 def test_input_b_shape():
