@@ -233,7 +233,7 @@ class PyPardisoSolver:
         A_ja = A.indices + 1
         x = np.zeros_like(b)
 
-        self.pardiso_error = 0
+        self.pardiso_error = np.zeros(1)
         
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
@@ -256,7 +256,7 @@ class PyPardisoSolver:
                           ctypes.byref(ctypes.c_int32(self.msglvl)), # msg-level -> 1: statistical info is printed
                           b.ctypes.data_as(c_float64_p), # b -> right-hand side vector/matrix
                           x.ctypes.data_as(c_float64_p), # x -> output
-                          ctypes.byref(ctypes.c_int32(self.pardiso_error))) # pardiso error
+                          self.pardiso_error.ctypes.data_as(c_int32_p)) # pardiso error
         
         if self.pardiso_error != 0:
             raise PyPardisoError(self.pardiso_error)
