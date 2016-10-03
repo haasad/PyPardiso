@@ -85,6 +85,8 @@ class PyPardisoSolver:
         self._mkl_pardiso.restype = None
         
         self.pt = np.zeros(64, dtype=np.int32)
+        self.maxfct = 1
+        self.mnum = 1
         self.iparm = np.zeros(64, dtype=np.int32)
         self.perm = np.zeros(0, dtype=np.int32)
         
@@ -230,31 +232,34 @@ class PyPardisoSolver:
         A_ia = A.indptr + 1
         A_ja = A.indices + 1
         x = np.zeros_like(b)
-        pardiso_error = ctypes.c_int32(0)
+
+        self.pardiso_error = 0
         
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
-        
+
+        self.n = A.shape[0]
+        self.nrhs = 1 if b.ndim == 1 else b.shape[1]
 
         self._mkl_pardiso(self.pt.ctypes.data_as(c_int32_p), # pt
-                          ctypes.byref(ctypes.c_int32(1)), # maxfct
-                          ctypes.byref(ctypes.c_int32(1)), # mnum
+                          ctypes.byref(ctypes.c_int32(self.maxfct)), # maxfct
+                          ctypes.byref(ctypes.c_int32(self.mnum)), # mnum
                           ctypes.byref(ctypes.c_int32(self.mtype)), # mtype -> 11 for real-nonsymetric
                           ctypes.byref(ctypes.c_int32(self.phase)), # phase -> 13 
-                          ctypes.byref(ctypes.c_int32(A.shape[0])), #N -> number of equations/size of matrix
+                          ctypes.byref(ctypes.c_int32(self.n)), #N -> number of equations/size of matrix
                           A_data.ctypes.data_as(c_float64_p), # A -> non-zero entries in matrix
                           A_ia.ctypes.data_as(c_int32_p), # ia -> csr-indptr
                           A_ja.ctypes.data_as(c_int32_p), # ja -> csr-indices
                           self.perm.ctypes.data_as(c_int32_p), # perm -> empty
-                          ctypes.byref(ctypes.c_int32(1 if b.ndim == 1 else b.shape[1])), # nrhs
+                          ctypes.byref(ctypes.c_int32(self.nrhs)), # nrhs
                           self.iparm.ctypes.data_as(c_int32_p), # iparm-array
                           ctypes.byref(ctypes.c_int32(self.msglvl)), # msg-level -> 1: statistical info is printed
                           b.ctypes.data_as(c_float64_p), # b -> right-hand side vector/matrix
                           x.ctypes.data_as(c_float64_p), # x -> output
-                          ctypes.byref(pardiso_error)) # pardiso error
+                          ctypes.byref(ctypes.c_int32(self.pardiso_error))) # pardiso error
         
-        if pardiso_error.value != 0:
-            raise PyPardisoError(pardiso_error.value)
+        if self.pardiso_error != 0:
+            raise PyPardisoError(self.pardiso_error)
         else:
             return np.ascontiguousarray(x) # change memory-layout back from fortran to c order
             
