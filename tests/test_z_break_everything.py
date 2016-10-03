@@ -71,9 +71,17 @@ def test_bvector_smoketest():
 #    x = ps._call_pardiso(A,b)
 
 def test_many_runs():
-    for _ in range(100):
-        A, b = create_test_A_b(5, 0.6)
+    for _ in range(1000):
+        A, b = create_test_A_b(50, 0.2)
         x = ps.solve(A,b)
+        A, b = create_test_A_b_small()
+        x = ps.solve(A,b)
+
+def test_several_solver_instances():
+    for _ in range(100):
+        A, b = create_test_A_b(50, 0.2)
+        psx = PyPardisoSolver()
+        x = psx.solve(A, b)
 
 
 def test_all_ran():
