@@ -54,16 +54,16 @@ class PyPardisoSolver:
     def __init__(self, mtype=11, phase=13, size_limit_storage=5e7):
         
         if sys.platform == 'darwin':
-            libmkl_core = ctypes.CDLL('libmkl_core.dylib')
+            self.libmkl_core = ctypes.CDLL('libmkl_core.dylib')
         elif sys.platform == 'win32':
-            libmkl_core = ctypes.CDLL('mkl_core.dll')
+            self.libmkl_core = ctypes.CDLL('mkl_core.dll')
         else:
-            libmkl_core = ctypes.CDLL('libmkl_core.so')
+            self.libmkl_core = ctypes.CDLL('libmkl_core.so')
         
         if ctypes.sizeof(ctypes.c_void_p) == 8:
-            self._mkl_pardiso = libmkl_core.mkl_pds_lp64_pardiso
+            self._mkl_pardiso = self.libmkl_core.mkl_pds_lp64_pardiso
         else:
-            self._mkl_pardiso = libmkl_core.mkl_pds_pardiso
+            self._mkl_pardiso = self.libmkl_core.mkl_pds_pardiso
 
         self._mkl_pardiso.argtypes = [ctypes.POINTER(ctypes.c_int32),      # pt
                                       ctypes.POINTER(ctypes.c_int32),      # maxfct

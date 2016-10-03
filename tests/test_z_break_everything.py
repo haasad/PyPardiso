@@ -7,6 +7,9 @@ from scipy.sparse import SparseEfficiencyWarning
 from scipy.sparse.linalg import spsolve as scipyspsolve
 from scipy.sparse.linalg import factorized as scipyfactorized
 
+import sys
+import _ctypes
+
 from pypardiso.pardiso_wrapper import PyPardisoSolver, PyPardisoError, PyPardisoWarning
 from pypardiso.scipy_aliases import pypardiso_solver, spsolve, factorized
 
@@ -77,11 +80,11 @@ def test_many_runs():
         A, b = create_test_A_b_small()
         x = ps.solve(A,b)
 
-def test_several_solver_instances():
-    for _ in range(100):
-        A, b = create_test_A_b(50, 0.2)
-        psx = PyPardisoSolver()
-        x = psx.solve(A, b)
+#def test_several_solver_instances():
+#    for _ in range(100):
+#        A, b = create_test_A_b(50, 0.2)
+#        psx = PyPardisoSolver()
+#        x = psx.solve(A, b)
 
 
 def test_all_ran():
@@ -94,4 +97,10 @@ def test_free_solver_memory():
     b = np.ones(1)
     ps.set_phase(0)
     ps._call_pardiso(A,b)
+
+def test_unload_shared_library():
+    if sys.platform == 'win32':
+        _ctypes.FreeLibrary(ps.libmkl_core._handle)
+    else:
+        _ctypes.dlclose(ps.libmkl_core._handle)
 
