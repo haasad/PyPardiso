@@ -65,10 +65,15 @@ def test_bvector_smoketest():
     A, b = create_test_A_b()
     basic_solve(A,b)
 
-def test_intentional_segfault():
-    A, b = create_test_A_b(5, 0.6)
-    A.indices[3] = 2727
-    x = ps._call_pardiso(A,b)
+#def test_intentional_segfault():
+#    A, b = create_test_A_b(5, 0.6)
+#    A.indices[3] = 2727
+#    x = ps._call_pardiso(A,b)
+
+def test_many_runs():
+    for _ in range(100):
+        A, b = create_test_A_b(5, 0.6)
+        x = ps.solve(A,b)
 
 
 def test_all_ran():
