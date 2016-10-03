@@ -64,6 +64,25 @@ class PyPardisoSolver:
             self._mkl_pardiso = libmkl_core.mkl_pds_lp64_pardiso
         else:
             self._mkl_pardiso = libmkl_core.mkl_pds_pardiso
+
+        self._mkl_pardiso.argtypes = [ctypes.POINTER(ctypes.c_int32),      # pt
+                                      ctypes.POINTER(ctypes.c_int32),      # maxfct
+                                      ctypes.POINTER(ctypes.c_int32),      # mnum
+                                      ctypes.POINTER(ctypes.c_int32),      # mtype
+                                      ctypes.POINTER(ctypes.c_int32),      # phase
+                                      ctypes.POINTER(ctypes.c_int32),      # n
+                                      ctypes.POINTER(None),                # a
+                                      ctypes.POINTER(ctypes.c_int32),      # ia
+                                      ctypes.POINTER(ctypes.c_int32),      # ja
+                                      ctypes.POINTER(ctypes.c_int32),      # perm
+                                      ctypes.POINTER(ctypes.c_int32),      # nrhs
+                                      ctypes.POINTER(ctypes.c_int32),      # iparm
+                                      ctypes.POINTER(ctypes.c_int32),      # msglvl
+                                      ctypes.POINTER(None),                # b
+                                      ctypes.POINTER(None),                # x
+                                      ctypes.POINTER(ctypes.c_int32)]      # error
+
+        self._mkl_pardiso.restype = None
         
         self.pt = np.zeros(64, dtype=np.int32)
         self.iparm = np.zeros(64, dtype=np.int32)
