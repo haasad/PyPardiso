@@ -38,6 +38,7 @@ install:
       conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy mkl-service pytest;
     fi
   - source activate test-environment
+  - pip install pytest-faulthandler
   - python setup.py install
 
 script:

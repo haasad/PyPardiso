@@ -146,7 +146,7 @@ class PyPardisoSolver:
         if self._is_already_factorized(A):
             self.set_phase(33)
         else:
-            #self.free_memory()
+            #self.free_memory(everything=True)
             self.set_phase(13)
         
         x = self._call_pardiso(A, b)
@@ -325,10 +325,10 @@ class PyPardisoSolver:
         self.factorized_A = sp.csr_matrix((0,0))
 
 
-    def free_memory(self):
+    def free_memory(self, everything=False):
         A = sp.csr_matrix((0,0))
         b = np.zeros(0)
-        self.set_phase(-1)
+        self.set_phase(-1 if everything else 0)
         self._call_pardiso(A,b)
         self.set_phase(13)
 
