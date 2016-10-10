@@ -1,7 +1,7 @@
 # PyPardisoProject
 Python interface to the Intel MKL Pardiso library to solve large sparse linear systems of equations
 
-More documentation is coming soon. In the meantime, refer to the comments and docstring in the source code.
+More documentation is coming soon. In the meantime, refer to the comments and docstrings in the source code.
 
 * Linux/OSX build status: [![Build Status](https://travis-ci.org/haasad/PyPardisoProject.svg?branch=master)](https://travis-ci.org/haasad/PyPardisoProject)
 
