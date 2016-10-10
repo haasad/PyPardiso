@@ -41,7 +41,11 @@ install:
   - source activate test-environment
   - pip install pytest-faulthandler
   #- python setup.py install
-  - conda build .
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      conda build .;
+    else
+      conda build --python $TRAVIS_PYTHON_VERSION .;
+    fi
   - conda install --use-local pypardiso
 
 script:
