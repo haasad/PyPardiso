@@ -31,11 +31,11 @@ def spsolve(A, b, *args, factorize=True, solver=pypardiso_solver, **kwargs):
         in two steps, therefore it is factorized by default. Subsequent calls to spsolve with the same matrix A 
         will be drastically faster
     """
-    A = solver._check_A(A)
+    solver._check_A(A)
     if factorize and not solver._is_already_factorized(A):
-        pypardiso_solver.factorize(A)
+        solver.factorize(A)
         
-    x = pypardiso_solver.solve(A, b)
+    x = solver.solve(A, b)
     
     return x.squeeze() # scipy always returns vectors with shape (n,) indstead of (1,n)
 

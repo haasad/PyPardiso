@@ -115,7 +115,6 @@ class PyPardisoSolver:
            other matrix types will be converted to CSR
         """
         
-        self.free_memory()
         self._check_A(A)
         
         if A.nnz > self.size_limit_storage:
@@ -149,7 +148,6 @@ class PyPardisoSolver:
         if self._is_already_factorized(A):
             self.set_phase(33)
         else:
-            #self.free_memory(everything=True)
             self.set_phase(13)
         
         x = self._call_pardiso(A, b)
