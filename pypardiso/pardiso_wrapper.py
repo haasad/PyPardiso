@@ -20,7 +20,7 @@ class PyPardisoSolver:
     matrix type: real (float64) and nonsymetric
     methods: solve, factorize
     
-    - use the "solve(A,b)" method to solve Ax=b for x, where A is a sparse CSR matrix and b is a vector or matrix
+    - use the "solve(A,b)" method to solve Ax=b for x, where A is a sparse CSR (or CSC) matrix and b is a numpy array
     - use the "factorize(A)" method first, if you intend to solve the system more than once for different right-hand 
       sides, the factorization will be reused automatically afterwards
     
@@ -30,7 +30,7 @@ class PyPardisoSolver:
     
     - additional options can be accessed by setting the iparms (see Pardiso documentation for description)
     - other matrix types can be chosen with the "set_matrix_type" method. complex matrix types are currently not
-      supported
+      supported. pypardiso is only teste for mtype=11 (real and nonsymetric)
     - the solving phases can be set with the "set_phase" method
     - The out-of-core (OOC) solver either fails or crashes my computer, be careful with iparm[60]
     
@@ -48,6 +48,13 @@ class PyPardisoSolver:
     --- Number of threads ---
     methods: get_max_threads, set_num_threads
     - you can control the number of threads by using the "set_num_threads" method
+
+
+    --- Memory usage ---
+    methods: remove_stored_factorization, free_memory
+
+    - remove_stored_factorization can be used to delete the wrapper's copy of matrix A
+    - free_memory releases the internal memory of the solver
     
     """
     
@@ -111,8 +118,7 @@ class PyPardisoSolver:
         same matrix A
         
         --- Parameters ---
-        A: sparse square CSR matrix (scipy.sparse.csr.csr_matrix)
-           other matrix types will be converted to CSR
+        A: sparse square CSR matrix (scipy.sparse.csr.csr_matrix), CSC matrix also possible
         """
         
         self._check_A(A)
@@ -132,14 +138,13 @@ class PyPardisoSolver:
         solve Ax=b for x
         
         --- Parameters ---
-        A: sparse square CSR matrix (scipy.sparse.csr.csr_matrix)
-           other matrix types will be converted to CSR
+        A: sparse square CSR matrix (scipy.sparse.csr.csr_matrix), CSC matrix also possible
         b: numpy ndarray
            right-hand side(s), b.shape[0] needs to be the same as A.shape[0]
            
         --- Returns ---
         x: numpy ndarray
-           solution of the system of linear equations, same shape as b
+           solution of the system of linear equations, same shape as input b
         """
         
         self._check_A(A)
@@ -153,10 +158,11 @@ class PyPardisoSolver:
         x = self._call_pardiso(A, b)
         
         # it is possible to call the solver with empty columns, but computationally expensive to check this
-        # beforehand, therefore only the results is checked for infinite elements.
-        if not np.isfinite(x).all():
-            warnings.warn('The result contains infinite elements. Make sure that matrix A contains no empty columns.',
-                          PyPardisoWarning)
+        # beforehand, therefore only the result is checked for infinite elements.
+        #if not np.isfinite(x).all():
+        #    warnings.warn('The result contains infinite elements. Make sure that matrix A contains no empty columns.',
+        #                  PyPardisoWarning)
+        # --> this check doesn't work consistently, maybe add an advanced input check method for A
         
         return x
     
@@ -199,7 +205,8 @@ class PyPardisoSolver:
             A.sort_indices()
             
         # scipy allows csr matrices with empty rows. a square matrix with an empty row is singular. calling 
-        # pardiso with a matrix A that contains empty rows leads to a segfault
+        # pardiso with a matrix A that contains empty rows leads to a segfault, same applies for csc with 
+        # empty columns
         if not np.diff(A.indptr).all():
             row_col = 'column' if self._solve_transposed else 'row'
             raise ValueError('Matrix A is singular, because it contains empty {}(s)'.format(row_col))
@@ -235,9 +242,7 @@ class PyPardisoSolver:
     def _call_pardiso(self, A, b):
         
         x = np.zeros_like(b)
-
         pardiso_error = ctypes.c_int32(0)
-        
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
 
@@ -320,6 +325,9 @@ class PyPardisoSolver:
 
 
     def free_memory(self, everything=False):
+        """release mkl's internal memory, either only for the factorization (ie the LU-decomposition) or all of 
+        mkl's internal memory if everything=True"""
+        self.remove_stored_factorization()
         A = sp.csr_matrix((0,0))
         b = np.zeros(0)
         self.set_phase(-1 if everything else 0)
