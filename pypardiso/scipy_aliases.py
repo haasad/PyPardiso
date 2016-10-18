@@ -8,7 +8,7 @@ from .pardiso_wrapper import PyPardisoSolver
 pypardiso_solver = PyPardisoSolver()
 
 
-def spsolve(A, b, *args, factorize=True, squeeze=True, solver=pypardiso_solver, **kwargs):
+def spsolve(A, b, factorize=True, squeeze=True, solver=pypardiso_solver, *args, **kwargs):
     """
     This function mimics scipy.sparse.linalg.spsolve, but uses the Pardiso solver instead of SuperLU/UMFPACK
     
@@ -42,7 +42,7 @@ def spsolve(A, b, *args, factorize=True, squeeze=True, solver=pypardiso_solver, 
     else:
         return x
 
-def factorized(A, *args, solver=pypardiso_solver, **kwargs):
+def factorized(A, solver=pypardiso_solver, *args, **kwargs):
     """
     This function mimics scipy.sparse.linalg.factorized, but uses the Pardiso solver instead of SuperLU/UMFPACK
     
