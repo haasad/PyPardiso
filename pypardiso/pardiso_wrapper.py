@@ -54,18 +54,21 @@ class PyPardisoSolver:
     def __init__(self, mtype=11, phase=13, size_limit_storage=5e7):
         
         if sys.platform == 'darwin':
-            self.libmkl_core = ctypes.CDLL('libmkl_core.dylib')
+            self.libmkl = ctypes.CDLL('libmkl_rt.dylib')
         elif sys.platform == 'win32':
-            self.libmkl_core = ctypes.CDLL('mkl_core.dll')
+            self.libmkl = ctypes.CDLL('mkl_rt.dll')
         else:
-            self.libmkl_core = ctypes.CDLL('libmkl_core.so')
-        
-        if ctypes.sizeof(ctypes.c_void_p) == 8:
-            self._mkl_pardiso = self.libmkl_core.mkl_pds_lp64_pardiso
-        else:
-            self._mkl_pardiso = self.libmkl_core.mkl_pds_pardiso
+            self.libmkl = ctypes.CDLL('libmkl_rt.so')
 
-        self._mkl_pardiso.argtypes = [ctypes.POINTER(ctypes.c_int32),      # pt
+        self._mkl_pardiso = self.libmkl.pardiso
+        
+        # determine 32bit or 64bit architecture
+        if ctypes.sizeof(ctypes.c_void_p) == 8:
+            self._pt_type = (ctypes.c_int64, np.int64)
+        else:
+            self._pt_type = (ctypes.c_int32, np.int32)
+
+        self._mkl_pardiso.argtypes = [ctypes.POINTER(self._pt_type[0]),    # pt
                                       ctypes.POINTER(ctypes.c_int32),      # maxfct
                                       ctypes.POINTER(ctypes.c_int32),      # mnum
                                       ctypes.POINTER(ctypes.c_int32),      # mtype
@@ -84,7 +87,7 @@ class PyPardisoSolver:
 
         self._mkl_pardiso.restype = None
         
-        self.pt = np.zeros(64, dtype=np.int32)
+        self.pt = np.zeros(64, dtype=self._pt_type[1])
         self.iparm = np.zeros(64, dtype=np.int32)
         self.perm = np.zeros(0, dtype=np.int32)
         
@@ -243,7 +246,7 @@ class PyPardisoSolver:
         c_float64_p = ctypes.POINTER(ctypes.c_double)
 
 
-        self._mkl_pardiso(self.pt.ctypes.data_as(c_int32_p), # pt
+        self._mkl_pardiso(self.pt.ctypes.data_as(ctypes.POINTER(self._pt_type[0])), # pt
                           ctypes.byref(ctypes.c_int32(1)), # maxfct
                           ctypes.byref(ctypes.c_int32(1)), # mnum
                           ctypes.byref(ctypes.c_int32(self.mtype)), # mtype -> 11 for real-nonsymetric
