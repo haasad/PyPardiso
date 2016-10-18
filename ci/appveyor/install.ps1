@@ -90,7 +90,7 @@ function UpdateConda ($python_home) {
 function main () {
     InstallMiniconda $env:PYTHON_VERSION $env:PYTHON_ARCH $env:PYTHON
     UpdateConda $env:PYTHON
-    InstallCondaPackages $env:PYTHON "conda-build anaconda-client numpy scipy mkl-service pytest"
+    InstallCondaPackages $env:PYTHON "conda-build anaconda-client"
 }
 
 main

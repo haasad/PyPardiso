@@ -8,28 +8,36 @@ environment:
       PYTHON_ARCH: "64"
       CONDA_PY: "35"
       CONDA_NPY: "111"
+      CONDA_ENV_PY: "3.5"
 
-    - PYTHON: "C:\\Python34_64"
-      PYTHON_VERSION: "3.4"
+    - PYTHON: "C:\\Python35_64"
+      PYTHON_VERSION: "3.5"
       PYTHON_ARCH: "64"
       CONDA_PY: "34"
       CONDA_NPY: "111"
+      CONDA_ENV_PY: "3.4"
 
     - PYTHON: "C:\\Python27_64"
       PYTHON_VERSION: "2.7"
       PYTHON_ARCH: "64"
       CONDA_PY: "27"
       CONDA_NPY: "111"
+      CONDA_ENV_PY: "2.7"
 
     - PYTHON: "C:\\Python35_32"
       PYTHON_VERSION: "3.5"
       PYTHON_ARCH: "32"
       CONDA_PY: "35"
       CONDA_NPY: "111"
+      CONDA_ENV_PY: "3.5"
 
 install:
   - powershell .\\ci\\appveyor\\install.ps1
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "conda config --set always_yes yes --set changeps1 no"
+  - "conda create -n test_env python=%CONDA_ENV_PY%"
+  - "activate test_env"
+  - "conda install numpy scipy mkl-service pytest"
   - "pip install pytest-faulthandler"
 
 test_script:
