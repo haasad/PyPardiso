@@ -235,9 +235,7 @@ class PyPardisoSolver:
         
     
     def _call_pardiso(self, A, b):
-        A_data = A.data
-        A_ia = A.indptr
-        A_ja = A.indices
+        
         x = np.zeros_like(b)
 
         pardiso_error = ctypes.c_int32(0)
@@ -245,16 +243,15 @@ class PyPardisoSolver:
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
 
-
         self._mkl_pardiso(self.pt.ctypes.data_as(ctypes.POINTER(self._pt_type[0])), # pt
                           ctypes.byref(ctypes.c_int32(1)), # maxfct
                           ctypes.byref(ctypes.c_int32(1)), # mnum
                           ctypes.byref(ctypes.c_int32(self.mtype)), # mtype -> 11 for real-nonsymetric
                           ctypes.byref(ctypes.c_int32(self.phase)), # phase -> 13 
                           ctypes.byref(ctypes.c_int32(A.shape[0])), #N -> number of equations/size of matrix
-                          A_data.ctypes.data_as(c_float64_p), # A -> non-zero entries in matrix
-                          A_ia.ctypes.data_as(c_int32_p), # ia -> csr-indptr
-                          A_ja.ctypes.data_as(c_int32_p), # ja -> csr-indices
+                          A.data.ctypes.data_as(c_float64_p), # A -> non-zero entries in matrix
+                          A.indptr.ctypes.data_as(c_int32_p), # ia -> csr-indptr
+                          A.indices.ctypes.data_as(c_int32_p), # ja -> csr-indices
                           self.perm.ctypes.data_as(c_int32_p), # perm -> empty
                           ctypes.byref(ctypes.c_int32(1 if b.ndim == 1 else b.shape[1])), # nrhs
                           self.iparm.ctypes.data_as(c_int32_p), # iparm-array
@@ -267,10 +264,6 @@ class PyPardisoSolver:
             raise PyPardisoError(pardiso_error.value)
         else:
             return np.ascontiguousarray(x) # change memory-layout back from fortran to c order
-            
-        #elif x.shape[1] == 1:
-        #    return x.ravel() # return 1-dim array like scipy
-        ### -> move this to the scipy aliases to have the strange behaviour there for compatibility
         
         
     def get_iparms(self):
