@@ -105,10 +105,6 @@ class PyPardisoSolver:
         self.factorized_A = sp.csr_matrix((0,0))
         self.size_limit_storage = size_limit_storage
         self._solve_transposed = False
-
-        # zero-based indexing
-        self.set_iparm(1,1)
-        self.set_iparm(35,1)
         
     
     def factorize(self, A):
@@ -246,6 +242,10 @@ class PyPardisoSolver:
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
 
+        # 1-based indexing
+        ia = A.indptr + 1
+        ja = A.indices + 1
+
         self._mkl_pardiso(self.pt.ctypes.data_as(ctypes.POINTER(self._pt_type[0])), # pt
                           ctypes.byref(ctypes.c_int32(1)), # maxfct
                           ctypes.byref(ctypes.c_int32(1)), # mnum
@@ -253,8 +253,8 @@ class PyPardisoSolver:
                           ctypes.byref(ctypes.c_int32(self.phase)), # phase -> 13 
                           ctypes.byref(ctypes.c_int32(A.shape[0])), #N -> number of equations/size of matrix
                           A.data.ctypes.data_as(c_float64_p), # A -> non-zero entries in matrix
-                          A.indptr.ctypes.data_as(c_int32_p), # ia -> csr-indptr
-                          A.indices.ctypes.data_as(c_int32_p), # ja -> csr-indices
+                          ia.ctypes.data_as(c_int32_p), # ia -> csr-indptr
+                          ja.ctypes.data_as(c_int32_p), # ja -> csr-indices
                           self.perm.ctypes.data_as(c_int32_p), # perm -> empty
                           ctypes.byref(ctypes.c_int32(1 if b.ndim == 1 else b.shape[1])), # nrhs
                           self.iparm.ctypes.data_as(c_int32_p), # iparm-array
