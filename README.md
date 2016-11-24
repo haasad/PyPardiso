@@ -29,6 +29,10 @@ PyPardiso provides a `spsolve` and a `factorized` method that are significantly 
 
 
 ## Changelog
+__v0.2.2__
+
+- CSR-matrix format is forced in `spsolve` and `factorized`. This fixes a serious compatibility issue with [brightway2](https://brightwaylca.org), where a technosphere matrix in CSC-format produces wrong results, due to the bad conditioning of the matrix (see details in issue #7).
+
 __v0.2.1__
 
 - Switched from zero- to one-based indexing for the call to the pardiso library. This brings performance of the factorization phase back to the level of v0.1.0, v0.2.0 is much slower.
