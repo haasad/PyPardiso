@@ -1,5 +1,6 @@
 # coding: utf-8
 import functools
+import scipy.sparse as sp
 from .pardiso_wrapper import PyPardisoSolver
 
 
@@ -37,6 +38,9 @@ def spsolve(A, b, factorize=True, squeeze=True, solver=pypardiso_solver, *args, 
         in two steps, therefore it is factorized by default. Subsequent calls to spsolve with the same matrix A 
         will be drastically faster. This makes the "factorized" method obsolete, but it is kept for compatibility.
     """
+    if sp.isspmatrix_csc(A):
+    	A = A.tocsr() # fixes issue with brightway2 technosphere matrix
+
     solver._check_A(A)
     if factorize and not solver._is_already_factorized(A):
         solver.factorize(A)
@@ -70,7 +74,7 @@ def factorized(A, solver=pypardiso_solver, *args, **kwargs):
         gain in PyPardiso by using factorized instead of spsolve.
                  
     """
-    solve_b = functools.partial(spsolve, A.copy(), squeeze=False, solver=solver)
+    solve_b = functools.partial(spsolve, A.tocsr().copy(), squeeze=False, solver=solver)
     
     return solve_b
 
