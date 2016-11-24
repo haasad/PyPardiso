@@ -55,6 +55,27 @@ def test_factorized_modified_A():
     np.testing.assert_array_equal(x1, x3)
     assert ps.phase == 33
 
+def test_factorized_csc_matrix():
+    ps.remove_stored_factorization()
+    ps.free_memory()
+    A, b = create_test_A_b_rand()
+    Afact_csr = factorized(A)
+    Afact_csc = factorized(A.tocsc())
+    assert sp.isspmatrix_csr(Afact_csc.args[0])
+    x1 = Afact_csr(b)
+    x2 = Afact_csc(b)
+    np.testing.assert_array_equal(x1,x2)
+
+def test_spsolve_csc_matrix():
+    ps.remove_stored_factorization()
+    ps.free_memory()
+    A, b = create_test_A_b_rand()
+    x_csc = spsolve(A.tocsc(), b)
+    assert sp.isspmatrix_csr(ps.factorized_A)
+    x_csr = spsolve(A, b)
+    np.testing.assert_array_equal(x_csr, x_csc)
+
+
 
 
 
