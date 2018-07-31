@@ -225,8 +225,11 @@ class PyPardisoSolver:
             raise ValueError("Dimension mismatch: Matrix A {} and array b {}".format(A.shape, b.shape))
             
         if b.dtype not in [np.float64, np.complex128]:
-                raise TypeError('Dtype {} for array b is not supported'.format(str(b.dtype)))
-        
+            raise TypeError('Dtype {} for array b is not supported'.format(str(b.dtype)))
+
+        if b.dtype != A.dtype:
+            raise TypeError('A and b must have identical types: A is {} and b is {}'.format(str(A.dtype),str(b.dtype)))
+            
         return b
         
     
