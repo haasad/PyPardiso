@@ -207,8 +207,8 @@ class PyPardisoSolver:
             row_col = 'column' if self._solve_transposed else 'row'
             raise ValueError('Matrix A is singular, because it contains empty {}(s)'.format(row_col))
         
-        if A.dtype != np.float64:
-            raise TypeError('PyPardiso currently only supports float64, but matrix A has dtype: {}'.format(A.dtype))
+        if A.dtype not in [np.float64, np.complex128]:
+            raise TypeError('PyPardiso currently only supports float64 and complex128, but matrix A has dtype: {}'.format(A.dtype))
             
             
     def _check_b(self, A, b):
@@ -224,12 +224,7 @@ class PyPardisoSolver:
         if b.shape[0] != A.shape[0]:
             raise ValueError("Dimension mismatch: Matrix A {} and array b {}".format(A.shape, b.shape))
             
-        if b.dtype != np.float64:
-            if b.dtype in [np.float16, np.float32, np.int16, np.int32, np.int64]:
-                warnings.warn("Array b's data type was converted from {} to float64".format(str(b.dtype)), 
-                              PyPardisoWarning)
-                b = b.astype(np.float64)
-            else:
+        if b.dtype not in [np.float64, np.complex128]:
                 raise TypeError('Dtype {} for array b is not supported'.format(str(b.dtype)))
         
         return b
@@ -240,8 +235,12 @@ class PyPardisoSolver:
         x = np.zeros_like(b)
         pardiso_error = ctypes.c_int32(0)
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
-        c_float64_p = ctypes.POINTER(ctypes.c_double)
 
+        if A.dtype == np.complex128:
+            c_data_p = np.ctypeslib.ndpointer(np.complex128, ndim=1, flags='F')
+        else:
+            c_data_p = np.ctypeslib.ndpointer(np.float64, ndim=1, flags='F')
+        
         # 1-based indexing
         ia = A.indptr + 1
         ja = A.indices + 1
@@ -252,15 +251,15 @@ class PyPardisoSolver:
                           ctypes.byref(ctypes.c_int32(self.mtype)), # mtype -> 11 for real-nonsymetric
                           ctypes.byref(ctypes.c_int32(self.phase)), # phase -> 13 
                           ctypes.byref(ctypes.c_int32(A.shape[0])), #N -> number of equations/size of matrix
-                          A.data.ctypes.data_as(c_float64_p), # A -> non-zero entries in matrix
+                          A.data.ctypes.data_as(c_data_p), # A -> non-zero entries in matrix
                           ia.ctypes.data_as(c_int32_p), # ia -> csr-indptr
                           ja.ctypes.data_as(c_int32_p), # ja -> csr-indices
                           self.perm.ctypes.data_as(c_int32_p), # perm -> empty
                           ctypes.byref(ctypes.c_int32(1 if b.ndim == 1 else b.shape[1])), # nrhs
                           self.iparm.ctypes.data_as(c_int32_p), # iparm-array
                           ctypes.byref(ctypes.c_int32(self.msglvl)), # msg-level -> 1: statistical info is printed
-                          b.ctypes.data_as(c_float64_p), # b -> right-hand side vector/matrix
-                          x.ctypes.data_as(c_float64_p), # x -> output
+                          b.ctypes.data_as(c_data_p), # b -> right-hand side vector/matrix
+                          x.ctypes.data_as(c_data_p), # x -> output
                           ctypes.byref(pardiso_error)) # pardiso error
         
         if pardiso_error.value != 0:
@@ -284,8 +283,11 @@ class PyPardisoSolver:
         if not i in {1,2,4,5,6,8,10,11,12,13,18,19,21,24,25,27,28,31,34,35,36,37,56,60}:
             warnings.warn('{} is no input iparm. See the Pardiso documentation.'.format(value), PyPardisoWarning)
         self.iparm[i-1] = value
-        
-        
+
+    def get_matrix_type(self):
+        """Get the matrix type (see Pardiso documentation)"""
+        return self.mtype
+
     def set_matrix_type(self, mtype):
         """Set the matrix type (see Pardiso documentation)"""
         self.mtype = mtype
