@@ -19,6 +19,7 @@ requirements:
     - numpy
     - scipy
     - mkl-service
+    - psutil
 
 about:
   home: https://github.com/haasad/PyPardisoProject

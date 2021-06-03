@@ -41,7 +41,7 @@ install:
   - "conda config --set always_yes yes --set changeps1 no"
   - "conda create -n test_env python=%CONDA_ENV_PY%"
   - "activate test_env"
-  - "conda install numpy scipy mkl-service pytest"
+  - "conda install numpy scipy mkl-service pytest psutil"
   - "pip install pytest-faulthandler"
   - "conda build --python %CONDA_ENV_PY% ."
   - "conda install --use-local pypardiso"

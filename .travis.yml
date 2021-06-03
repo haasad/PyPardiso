@@ -45,7 +45,7 @@ install:
 
   # Replace dep1 dep2 ... with your dependencies
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      conda create -q -n test-environment python=$pyver numpy scipy mkl-service pytest;
+      conda create -q -n test-environment python=$pyver numpy scipy mkl-service pytest psutil;
     else
       conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy mkl-service pytest;
     fi
@@ -63,7 +63,7 @@ script:
   # Your test script goes here
   #py.test
   python -m pytest
-  
+
 
 notifications:
   email:
