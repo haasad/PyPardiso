@@ -30,6 +30,10 @@ PyPardiso provides a `spsolve` and a `factorized` method that are significantly 
 
 ## Changelog
 
+__v0.3.1__
+
+- Revert to the old way of detecting the mkl_rt library on osx, since psutil doesn't work (see [#14])
+
 __v0.3.0__
 
 - Changed how pypardiso detects the __mkl_rt__ library to fix a breaking change on windwos with [mkl 2021.2.0](https://anaconda.org/conda-forge/mkl). See [#12](https://github.com/haasad/PyPardisoProject/issues/12) for details.
