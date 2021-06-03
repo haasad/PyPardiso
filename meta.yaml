@@ -1,6 +1,6 @@
 package:
   name: pypardiso
-  version: "0.2.2"
+  version: "0.3.0"
 
 source:
   git_rev: origin/master

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pypardiso',
-    version="0.2.2",
+    version="0.3.0",
     packages=['pypardiso'],
     author="Adrian Haas",
     author_email="adrian.pypardiso@gmail.com",
