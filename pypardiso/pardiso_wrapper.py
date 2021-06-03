@@ -1,9 +1,10 @@
 # coding: utf-8
 
-import sys
+import os
 import ctypes
 import warnings
 import hashlib
+import psutil
 import mkl
 import numpy as np
 import scipy.sparse as sp
@@ -60,13 +61,10 @@ class PyPardisoSolver:
 
     def __init__(self, mtype=11, phase=13, size_limit_storage=5e7):
 
-        if sys.platform == 'darwin':
-            self.libmkl = ctypes.CDLL('libmkl_rt.dylib')
-        elif sys.platform == 'win32':
-            self.libmkl = ctypes.CDLL('mkl_rt.dll')
-        else:
-            self.libmkl = ctypes.CDLL('libmkl_rt.so')
-
+        # find the correct mkl_rt library by searching the loaded libraries of the process
+        proc = psutil.Process(os.getpid())
+        mkl_rt = [lib.path for lib in proc.memory_maps() if 'mkl_rt' in lib.path][0]
+        self.libmkl = ctypes.CDLL(mkl_rt)
         self._mkl_pardiso = self.libmkl.pardiso
 
         # determine 32bit or 64bit architecture
