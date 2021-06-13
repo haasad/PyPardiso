@@ -1,10 +1,10 @@
 # coding: utf-8
-
 import os
 import sys
 import ctypes
 import warnings
 import hashlib
+
 import psutil
 import mkl
 import numpy as np
@@ -105,10 +105,9 @@ class PyPardisoSolver:
         self.phase = phase
         self.msglvl = False
 
-        self.factorized_A = sp.csr_matrix((0,0))
+        self.factorized_A = sp.csr_matrix((0, 0))
         self.size_limit_storage = size_limit_storage
         self._solve_transposed = False
-
 
     def factorize(self, A):
         """
@@ -128,9 +127,8 @@ class PyPardisoSolver:
             self.factorized_A = A.copy()
 
         self.set_phase(12)
-        b = np.zeros((A.shape[0],1))
+        b = np.zeros((A.shape[0], 1))
         self._call_pardiso(A, b)
-
 
     def solve(self, A, b):
         """
@@ -158,13 +156,12 @@ class PyPardisoSolver:
 
         # it is possible to call the solver with empty columns, but computationally expensive to check this
         # beforehand, therefore only the result is checked for infinite elements.
-        #if not np.isfinite(x).all():
+        # if not np.isfinite(x).all():
         #    warnings.warn('The result contains infinite elements. Make sure that matrix A contains no empty columns.',
         #                  PyPardisoWarning)
         # --> this check doesn't work consistently, maybe add an advanced input check method for A
 
         return x
-
 
     def _is_already_factorized(self, A):
         if type(self.factorized_A) == str:
@@ -172,18 +169,15 @@ class PyPardisoSolver:
         else:
             return self._csr_matrix_equal(A, self.factorized_A)
 
-
     def _csr_matrix_equal(self, a1, a2):
         return all((np.array_equal(a1.indptr, a2.indptr),
                     np.array_equal(a1.indices, a2.indices),
                     np.array_equal(a1.data, a2.data)))
 
-
     def _hash_csr_matrix(self, matrix):
         return (hashlib.sha1(matrix.indices).hexdigest() +
                 hashlib.sha1(matrix.indptr).hexdigest() +
                 hashlib.sha1(matrix.data).hexdigest())
-
 
     def _check_A(self, A):
         if A.shape[0] != A.shape[1]:
@@ -191,10 +185,10 @@ class PyPardisoSolver:
 
         if sp.isspmatrix_csr(A):
             self._solve_transposed = False
-            self.set_iparm(12,0)
+            self.set_iparm(12, 0)
         elif sp.isspmatrix_csc(A):
             self._solve_transposed = True
-            self.set_iparm(12,1)
+            self.set_iparm(12, 1)
         else:
             msg = 'PyPardiso requires matrix A to be in CSR or CSC format, but matrix A is: {}'.format(type(A))
             raise TypeError(msg)
@@ -212,7 +206,6 @@ class PyPardisoSolver:
 
         if A.dtype != np.float64:
             raise TypeError('PyPardiso currently only supports float64, but matrix A has dtype: {}'.format(A.dtype))
-
 
     def _check_b(self, A, b):
         if sp.isspmatrix(b):
@@ -237,7 +230,6 @@ class PyPardisoSolver:
 
         return b
 
-
     def _call_pardiso(self, A, b):
 
         x = np.zeros_like(b)
@@ -249,94 +241,82 @@ class PyPardisoSolver:
         ia = A.indptr + 1
         ja = A.indices + 1
 
-        self._mkl_pardiso(self.pt.ctypes.data_as(ctypes.POINTER(self._pt_type[0])), # pt
-                          ctypes.byref(ctypes.c_int32(1)), # maxfct
-                          ctypes.byref(ctypes.c_int32(1)), # mnum
-                          ctypes.byref(ctypes.c_int32(self.mtype)), # mtype -> 11 for real-nonsymetric
-                          ctypes.byref(ctypes.c_int32(self.phase)), # phase -> 13
-                          ctypes.byref(ctypes.c_int32(A.shape[0])), #N -> number of equations/size of matrix
-                          A.data.ctypes.data_as(c_float64_p), # A -> non-zero entries in matrix
-                          ia.ctypes.data_as(c_int32_p), # ia -> csr-indptr
-                          ja.ctypes.data_as(c_int32_p), # ja -> csr-indices
-                          self.perm.ctypes.data_as(c_int32_p), # perm -> empty
-                          ctypes.byref(ctypes.c_int32(1 if b.ndim == 1 else b.shape[1])), # nrhs
-                          self.iparm.ctypes.data_as(c_int32_p), # iparm-array
-                          ctypes.byref(ctypes.c_int32(self.msglvl)), # msg-level -> 1: statistical info is printed
-                          b.ctypes.data_as(c_float64_p), # b -> right-hand side vector/matrix
-                          x.ctypes.data_as(c_float64_p), # x -> output
-                          ctypes.byref(pardiso_error)) # pardiso error
+        self._mkl_pardiso(self.pt.ctypes.data_as(ctypes.POINTER(self._pt_type[0])),  # pt
+                          ctypes.byref(ctypes.c_int32(1)),  # maxfct
+                          ctypes.byref(ctypes.c_int32(1)),  # mnum
+                          ctypes.byref(ctypes.c_int32(self.mtype)),  # mtype -> 11 for real-nonsymetric
+                          ctypes.byref(ctypes.c_int32(self.phase)),  # phase -> 13
+                          ctypes.byref(ctypes.c_int32(A.shape[0])),  # N -> number of equations/size of matrix
+                          A.data.ctypes.data_as(c_float64_p),  # A -> non-zero entries in matrix
+                          ia.ctypes.data_as(c_int32_p),  # ia -> csr-indptr
+                          ja.ctypes.data_as(c_int32_p),  # ja -> csr-indices
+                          self.perm.ctypes.data_as(c_int32_p),  # perm -> empty
+                          ctypes.byref(ctypes.c_int32(1 if b.ndim == 1 else b.shape[1])),  # nrhs
+                          self.iparm.ctypes.data_as(c_int32_p),  # iparm-array
+                          ctypes.byref(ctypes.c_int32(self.msglvl)),  # msg-level -> 1: statistical info is printed
+                          b.ctypes.data_as(c_float64_p),  # b -> right-hand side vector/matrix
+                          x.ctypes.data_as(c_float64_p),  # x -> output
+                          ctypes.byref(pardiso_error))  # pardiso error
 
         if pardiso_error.value != 0:
             raise PyPardisoError(pardiso_error.value)
         else:
-            return np.ascontiguousarray(x) # change memory-layout back from fortran to c order
-
+            return np.ascontiguousarray(x)  # change memory-layout back from fortran to c order
 
     def get_iparms(self):
         """Returns a dictionary of iparms"""
         return dict(enumerate(self.iparm, 1))
 
-
     def get_iparm(self, i):
         """Returns the i-th iparm (1-based indexing)"""
         return self.iparm[i-1]
 
-
     def set_iparm(self, i, value):
         """set the i-th iparm to 'value' (1-based indexing)"""
-        if not i in {1,2,4,5,6,8,10,11,12,13,18,19,21,24,25,27,28,31,34,35,36,37,56,60}:
+        if i not in {1, 2, 4, 5, 6, 8, 10, 11, 12, 13, 18, 19, 21, 24, 25, 27, 28, 31, 34, 35, 36, 37, 56, 60}:
             warnings.warn('{} is no input iparm. See the Pardiso documentation.'.format(value), PyPardisoWarning)
         self.iparm[i-1] = value
-
 
     def set_matrix_type(self, mtype):
         """Set the matrix type (see Pardiso documentation)"""
         self.mtype = mtype
 
-
     def get_max_threads(self):
         """Returns the maximum number of threads the solver will use"""
         return mkl.get_max_threads()
-
 
     def set_num_threads(self, num_threads):
         """Set the number of threads the solver should use (only a hint, not guaranteed that
         the solver uses this amount)"""
         mkl.set_num_threads(num_threads)
 
-
     def set_statistical_info_on(self):
         """Display statistical info (appears in notebook server console window if pypardiso is
         used from jupyter notebook, use wurlitzer to redirect info to the notebook)"""
         self.msglvl = 1
 
-
     def set_statistical_info_off(self):
         """Turns statistical info off"""
         self.msglvl = 0
-
 
     def set_phase(self, phase):
         """Set the phase(s) for the solver. See the Pardiso documentation for details."""
         self.phase = phase
 
-
     def remove_stored_factorization(self):
         """removes the stored factorization, this will free the memory in python, but the factorization in pardiso
         is still accessible with a direct call to self._call_pardiso(A,b) with phase=33"""
-        self.factorized_A = sp.csr_matrix((0,0))
-
+        self.factorized_A = sp.csr_matrix((0, 0))
 
     def free_memory(self, everything=False):
         """release mkl's internal memory, either only for the factorization (ie the LU-decomposition) or all of
         mkl's internal memory if everything=True"""
         self.remove_stored_factorization()
-        A = sp.csr_matrix((0,0))
+        A = sp.csr_matrix((0, 0))
         b = np.zeros(0)
         self.set_phase(-1 if everything else 0)
-        self._call_pardiso(A,b)
+        self._call_pardiso(A, b)
         self.set_phase(13)
-
 
 
 class PyPardisoWarning(UserWarning):
@@ -351,5 +331,3 @@ class PyPardisoError(Exception):
     def __str__(self):
         return ('The Pardiso solver failed with error code {}. '
                 'See Pardiso documentation for details.'.format(self.value))
-
-
