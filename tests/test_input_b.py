@@ -21,7 +21,7 @@ def test_input_b_sparse():
 
 def test_input_b_shape():
     A, b = create_test_A_b_rand()
-    x_array = ps.solve(A,b)
+    x_array = ps.solve(A, b)
     assert x_array.shape == b.shape
     x_vector = ps.solve(A, b.squeeze())
     assert x_vector.shape == b.squeeze().shape
@@ -34,7 +34,7 @@ def test_input_b_dtypes():
         bdt = b.astype(dt)
         with pytest.warns(PyPardisoWarning):
             basic_solve(A, bdt)
-            
+
     for dt in [np.complex64, np.complex128, np.complex128, np.uint16, np.uint32, np.uint64]:
         bdt = b.astype(dt)
         with pytest.raises(TypeError):
@@ -43,7 +43,7 @@ def test_input_b_dtypes():
 
 def test_input_b_fortran_order():
     A, b = create_test_A_b_rand(matrix=True)
-    x = ps.solve(A,b)
+    x = ps.solve(A, b)
     xfort = ps.solve(A, np.asfortranarray(b))
     np.testing.assert_array_equal(x, xfort)
 
@@ -52,6 +52,4 @@ def test_input_b_wrong_shape():
     A, b = create_test_A_b_rand()
     b = np.append(b, 1)
     with pytest.raises(ValueError):
-        basic_solve(A,b)
-    
-
+        basic_solve(A, b)
