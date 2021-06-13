@@ -1,5 +1,0 @@
-mkl
-mkl-service
-numpy
-scipy
-psutil

@@ -8,7 +8,7 @@ source:
 
 build:
   noarch: python
-  script: "python setup.py install"
+  script: "python setup.py install --single-version-externally-managed --record record.txt"
 
 requirements:
   build:
