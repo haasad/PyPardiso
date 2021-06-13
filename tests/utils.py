@@ -1,5 +1,4 @@
 # coding: utf-8
-import pytest
 import numpy as np
 import scipy.sparse as sp
 from pypardiso.scipy_aliases import pypardiso_solver

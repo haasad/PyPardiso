@@ -1,6 +1,5 @@
 # coding: utf-8
-
-from utils import create_test_A_b_small, create_test_A_b_rand, basic_solve
+from utils import create_test_A_b_rand, basic_solve
 from pypardiso.scipy_aliases import pypardiso_solver
 
 ps = pypardiso_solver

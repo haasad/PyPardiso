@@ -1,12 +1,11 @@
 # coding: utf-8
-import pytest
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse.linalg import spsolve as scipyspsolve
 from scipy.sparse.linalg import factorized as scipyfactorized
 
 from pypardiso.scipy_aliases import pypardiso_solver, spsolve, factorized
-from utils import create_test_A_b_small, create_test_A_b_rand, basic_solve
+from utils import create_test_A_b_small, create_test_A_b_rand
 
 ps = pypardiso_solver
 
