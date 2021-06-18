@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pypardiso',
-    version="0.3.1",
+    version="0.3.2",
     packages=['pypardiso'],
     install_requires=['mkl-service', 'numpy', 'scipy', 'psutil'],
     author="Adrian Haas",
@@ -20,10 +20,7 @@ setup(
         'Operating System :: POSIX',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Mathematics',
-        'Topic :: Scientific/Engineering :: Visualization',
     ],
 )

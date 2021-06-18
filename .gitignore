@@ -7,3 +7,5 @@ __pycache__
 *~
 *.egg-info
 .flake8
+build
+dist

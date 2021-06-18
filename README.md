@@ -25,6 +25,10 @@ PyPardiso provides a `spsolve` and a `factorized` method that are significantly 
 
 ## Changelog
 
+__v0.3.2__
+
+* Change requirements in setup.py to fix [failing conda-forge build](https://github.com/conda-forge/staged-recipes/pull/15106#discussion_r654696146)
+
 __v0.3.1__
 
 - Revert to the old way of detecting the mkl_rt library on osx, since psutil doesn't work (see [#14])
