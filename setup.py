@@ -4,7 +4,7 @@ setup(
     name='pypardiso',
     version="0.3.1",
     packages=['pypardiso'],
-    install_requires=['mkl', 'mkl-service', 'numpy', 'scipy', 'psutil'],
+    install_requires=['mkl-service', 'numpy', 'scipy', 'psutil'],
     author="Adrian Haas",
     license=open('LICENSE.txt').read(),
     url="https://github.com/haasad/PyPardisoProject",
