@@ -1,9 +1,11 @@
-name: Publish new releases on PyPI
+name: PyPI release
 
 on:
   push:
     branches:
-      - pypi
+      - master
+    tags:
+      - '*'
 
 jobs:
   build-and-publish:
@@ -23,8 +25,8 @@ jobs:
       - name: Build
         run: python -m build
       - name: Upload to PyPI
+        if: startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: ${{ secrets.PYPI_TEST_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_TOKEN }}
