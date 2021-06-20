@@ -9,6 +9,7 @@ setup(
     license=open('LICENSE.txt').read(),
     url="https://github.com/haasad/PyPardisoProject",
     long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
     description='Python interface to the Intel MKL Pardiso library to solve large sparse linear systems of equations',
     classifiers=[
         'Intended Audience :: End Users/Desktop',
