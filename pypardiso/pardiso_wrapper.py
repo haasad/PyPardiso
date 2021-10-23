@@ -1,12 +1,12 @@
 # coding: utf-8
 import os
 import sys
+import glob
 import ctypes
 import warnings
 import hashlib
+from ctypes.util import find_library
 
-import psutil
-import mkl
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import SparseEfficiencyWarning
@@ -47,11 +47,6 @@ class PyPardisoSolver:
     - wurlitzer dosen't work on windows, info appears in notebook server console window if used from jupyter notebook
 
 
-    --- Number of threads ---
-    methods: get_max_threads, set_num_threads
-    - you can control the number of threads by using the "set_num_threads" method
-
-
     --- Memory usage ---
     methods: remove_stored_factorization, free_memory
 
@@ -62,13 +57,32 @@ class PyPardisoSolver:
 
     def __init__(self, mtype=11, phase=13, size_limit_storage=5e7):
 
-        if sys.platform == 'darwin':
-            self.libmkl = ctypes.CDLL('libmkl_rt.dylib')
-        else:
-            # find the correct mkl_rt library by searching the loaded libraries of the process
-            proc = psutil.Process(os.getpid())
-            mkl_rt = [lib.path for lib in proc.memory_maps() if 'mkl_rt' in lib.path][0]
+        self.libmkl = None
+        mkl_rt = find_library('mkl_rt')
+        if mkl_rt is None:
+            mkl_rt = find_library('mkl_rt.1')
+
+        if mkl_rt is not None:
             self.libmkl = ctypes.CDLL(mkl_rt)
+        else:
+            for mkl_rt_name in ['libmkl_rt.so', 'mkl_rt.1.dll', 'mkl_rt.dll', 'libmkl_rt.dylib', 'libmkl_rt.so.1']:
+                try:
+                    self.libmkl = ctypes.CDLL(mkl_rt_name)
+                    break
+                except (OSError, ImportError):
+                    pass
+
+            if self.libmkl is None:
+                mkl_rt_path = glob.glob(f'{sys.prefix}/**/*mkl_rt*', recursive=True)
+                for path in mkl_rt_path:
+                    try:
+                        self.libmkl = ctypes.CDLL(path)
+                        break
+                    except (OSError, ImportError):
+                        pass
+
+            if self.libmkl is None:
+                raise ImportError('mkl_rt not found')
 
         self._mkl_pardiso = self.libmkl.pardiso
 
@@ -280,15 +294,6 @@ class PyPardisoSolver:
     def set_matrix_type(self, mtype):
         """Set the matrix type (see Pardiso documentation)"""
         self.mtype = mtype
-
-    def get_max_threads(self):
-        """Returns the maximum number of threads the solver will use"""
-        return mkl.get_max_threads()
-
-    def set_num_threads(self, num_threads):
-        """Set the number of threads the solver should use (only a hint, not guaranteed that
-        the solver uses this amount)"""
-        mkl.set_num_threads(num_threads)
 
     def set_statistical_info_on(self):
         """Display statistical info (appears in notebook server console window if pypardiso is
