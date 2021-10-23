@@ -1,0 +1,4 @@
+mkl
+scipy
+mkl-service
+psutil
