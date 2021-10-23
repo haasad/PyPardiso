@@ -70,7 +70,7 @@ class PyPardisoSolver:
         if mkl_rt is not None:
             self.libmkl = ctypes.CDLL(mkl_rt)
         else:
-            for mkl_rt_name in ['libmkl_rt.so', 'mkl_rt.1.dll', 'mkl_rt.dll', 'libmkl_rt.dylib', 'libmkl_rt.so.1', 'libmkl_rt.1.dylib']:
+            for mkl_rt_name in ['libmkl_rt.so', 'mkl_rt.1.dll', 'mkl_rt.dll', 'libmkl_rt.dylib', 'libmkl_rt.so.1']:
                 try:
                     self.libmkl = ctypes.CDLL(mkl_rt_name)
                     break
