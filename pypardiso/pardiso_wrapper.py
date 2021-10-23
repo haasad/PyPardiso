@@ -6,7 +6,6 @@ import warnings
 import hashlib
 
 import psutil
-import mkl
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import SparseEfficiencyWarning
@@ -280,15 +279,6 @@ class PyPardisoSolver:
     def set_matrix_type(self, mtype):
         """Set the matrix type (see Pardiso documentation)"""
         self.mtype = mtype
-
-    def get_max_threads(self):
-        """Returns the maximum number of threads the solver will use"""
-        return mkl.get_max_threads()
-
-    def set_num_threads(self, num_threads):
-        """Set the number of threads the solver should use (only a hint, not guaranteed that
-        the solver uses this amount)"""
-        mkl.set_num_threads(num_threads)
 
     def set_statistical_info_on(self):
         """Display statistical info (appears in notebook server console window if pypardiso is
