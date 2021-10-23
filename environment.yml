@@ -4,4 +4,3 @@ dependencies:
   - mkl
   - numpy
   - scipy
-  - psutil

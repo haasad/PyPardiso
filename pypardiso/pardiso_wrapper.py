@@ -4,8 +4,8 @@ import sys
 import ctypes
 import warnings
 import hashlib
+from ctypes.util import find_library
 
-import psutil
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import SparseEfficiencyWarning
@@ -61,12 +61,21 @@ class PyPardisoSolver:
 
     def __init__(self, mtype=11, phase=13, size_limit_storage=5e7):
 
-        if sys.platform == 'darwin':
-            self.libmkl = ctypes.CDLL('libmkl_rt.dylib')
+        self.libmkl = None
+        mkl_rt = find_library('mkl_rt')
+        if mkl_rt is None:
+            mkl_rt = find_library('mkl_rt.1')
+
+        if mkl_rt is None:
+            for mkl_rt_name in ['libmkl_rt.so', 'mkl_rt.1.dll', 'mkl_rt.dll', 'libmkl_rt.dylib', 'libmkl_rt.so.1']:
+                try:
+                    self.libmkl = ctypes.CDLL(mkl_rt_name)
+                    break
+                except (OSError, ImportError):
+                    pass
+            if self.libmkl is None:
+                raise ImportError('mkl_rt not found')
         else:
-            # find the correct mkl_rt library by searching the loaded libraries of the process
-            proc = psutil.Process(os.getpid())
-            mkl_rt = [lib.path for lib in proc.memory_maps() if 'mkl_rt' in lib.path][0]
             self.libmkl = ctypes.CDLL(mkl_rt)
 
         self._mkl_pardiso = self.libmkl.pardiso

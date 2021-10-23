@@ -1,3 +1,2 @@
 mkl
 scipy
-psutil
