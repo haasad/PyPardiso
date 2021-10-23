@@ -1,0 +1,38 @@
+name: PyPardiso-Tests-Scheduled
+
+on:
+  schedule:
+    # Run the tests once every 24 hours to catch dependency problems early
+    - cron: '0 7 * * *'
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up miniconda with python ${{ matrix.python-version }}
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        activate-environment: test
+        environment-file: environment.yml
+        auto-activate-base: false
+    - name: Lint with flake8
+      shell: bash -l {0}
+      run: |
+        conda install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        python -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      shell: bash -l {0}
+      run: |
+        conda install pytest
+        python -m pytest
