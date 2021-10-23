@@ -47,11 +47,6 @@ class PyPardisoSolver:
     - wurlitzer dosen't work on windows, info appears in notebook server console window if used from jupyter notebook
 
 
-    --- Number of threads ---
-    methods: get_max_threads, set_num_threads
-    - you can control the number of threads by using the "set_num_threads" method
-
-
     --- Memory usage ---
     methods: remove_stored_factorization, free_memory
 
