@@ -74,6 +74,8 @@ class PyPardisoSolver:
                 except (OSError, ImportError):
                     pass
             if self.libmkl is None:
+                import glob
+                print(glob.glob(f'{sys.prefix}/**/*mkl_rt*', recursive=True))
                 raise ImportError('mkl_rt not found')
         else:
             self.libmkl = ctypes.CDLL(mkl_rt)
