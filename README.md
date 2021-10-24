@@ -1,5 +1,5 @@
 # PyPardisoProject
-[![Anaconda-Server Badge](https://anaconda.org/haasad/pypardiso/badges/version.svg)](https://anaconda.org/haasad/pypardiso) [![PyPardiso-Tests](https://github.com/haasad/PyPardisoProject/actions/workflows/conda-pytest.yaml/badge.svg?branch=master)](https://github.com/haasad/PyPardisoProject/actions/workflows/conda-pytest.yaml)
+[![Anaconda-Server Badge](https://anaconda.org/haasad/pypardiso/badges/version.svg)](https://anaconda.org/haasad/pypardiso) [![pypardiso-tests](https://github.com/haasad/PyPardisoProject/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/haasad/PyPardisoProject/actions/workflows/tests.yaml)
 
 Python interface to the [Intel MKL Pardiso library](https://software.intel.com/en-us/node/470282) to solve large sparse linear systems of equations
 
