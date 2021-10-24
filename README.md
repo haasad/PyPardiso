@@ -13,13 +13,11 @@ PyPardiso is not a python interface to the PARDISO Solver from the [PARDISO 7.2 
 PyPardiso runs on Linux, Windows and MacOS. It can be installed with __conda__ or __pip__. It is recommended to install PyPardiso using a virtual environment.
 
 ### conda-forge
-[![conda-forge version](https://anaconda.org/conda-forge/pypardiso/badges/version.svg)]
 ```
 conda install -c conda-forge pypardiso
 ```
 
 ### PyPI
-[![PyPI version](https://badge.fury.io/py/pypardiso.svg)](https://pypi.org/project/pypardiso/)
 ```
 pip install pypardiso
 ```
