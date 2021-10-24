@@ -1,5 +1,12 @@
 ## Changelog
 
+__v0.4.0__
+
+- remove mkl-service dependency (fixes haasad/PyPardisoProject#24 and haasad/PyPardisoProject#26)
+    - `get_max_threads` and `set_num_threads` methods are removed from the `PyPardisoSolver` class, use `mkl-service` directly if you require them
+- change how the shared_library `mkl_rt` is detected to account for differences between conda and pip
+    - also removes the psutil dependency
+
 __v0.3.3__
 
 * Release on PyPI and anaconda.org/haasad with github actions (see #19 and #20)
