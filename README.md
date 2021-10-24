@@ -9,13 +9,19 @@ PyPardiso provides the same functionality as SciPy's [scipy.sparse.linalg.spsolv
 PyPardiso is not a python interface to the PARDISO Solver from the [PARDISO 7.2 Solver Project](https://www.pardiso-project.org/) and it also doesn't currently support complex numbers. Check out [JuliaSparse/Pardiso.jl](https://github.com/JuliaSparse/Pardiso.jl/) for these more advanced use cases.
 
 ## Installation
-[![Anaconda-Server Badge](https://anaconda.org/haasad/pypardiso/badges/installer/conda.svg)](https://conda.anaconda.org/haasad)
 
-Use PyPardiso with the [anaconda](https://www.continuum.io/downloads) python distribution (use [miniconda](http://conda.pydata.org/miniconda.html) if you need to install it). PyPardiso makes use of the Intel Math Kernel Library that is [included for free with conda](https://www.continuum.io/blog/developer-blog/anaconda-25-release-now-mkl-optimizations) and therefore doesn't work with other distributions (at least for the moment).
+PyPardiso runs on Linux, Windows and MacOS. It can be installed with __conda__ or __pip__. It is recommended to install PyPardiso using a virtual environment.
 
-To install PyPardiso:
+### conda-forge
+[![conda-forge version](https://anaconda.org/conda-forge/pypardiso/badges/version.svg)]
 ```
-conda install -c haasad pypardiso
+conda install -c conda-forge pypardiso
+```
+
+### PyPI
+[![PyPI version](https://badge.fury.io/py/pypardiso.svg)](https://pypi.org/project/pypardiso/)
+```
+pip install pypardiso
 ```
 
 ## Basic usage
