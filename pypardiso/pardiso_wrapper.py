@@ -62,27 +62,22 @@ class PyPardisoSolver:
         if mkl_rt is None:
             mkl_rt = find_library('mkl_rt.1')
 
-        if mkl_rt is not None:
-            self.libmkl = ctypes.CDLL(mkl_rt)
-        else:
-            for mkl_rt_name in ['libmkl_rt.so', 'mkl_rt.1.dll', 'mkl_rt.dll', 'libmkl_rt.dylib', 'libmkl_rt.so.1']:
+        if mkl_rt is None:
+            mkl_rt_path = sorted(
+                glob.glob(f'{sys.prefix}/[Ll]ib*/**/*mkl_rt*', recursive=True),
+                key=len
+            )
+            for path in mkl_rt_path:
                 try:
-                    self.libmkl = ctypes.CDLL(mkl_rt_name)
+                    self.libmkl = ctypes.CDLL(path)
                     break
                 except (OSError, ImportError):
                     pass
 
             if self.libmkl is None:
-                mkl_rt_path = glob.glob(f'{sys.prefix}/**/*mkl_rt*', recursive=True)
-                for path in mkl_rt_path:
-                    try:
-                        self.libmkl = ctypes.CDLL(path)
-                        break
-                    except (OSError, ImportError):
-                        pass
-
-            if self.libmkl is None:
                 raise ImportError('mkl_rt not found')
+        else:
+            self.libmkl = ctypes.CDLL(mkl_rt)
 
         self._mkl_pardiso = self.libmkl.pardiso
 
