@@ -58,31 +58,36 @@ class PyPardisoSolver:
     def __init__(self, mtype=11, phase=13, size_limit_storage=5e7):
 
         self.libmkl = None
+        # Look for the mkl_rt shared library with ctypes.util.find_library
         mkl_rt = find_library('mkl_rt')
+        # also look for mkl_rt.1, Windows-specific, see
+        # https://github.com/haasad/PyPardisoProject/issues/12
         if mkl_rt is None:
             mkl_rt = find_library('mkl_rt.1')
 
-        if mkl_rt is not None:
-            self.libmkl = ctypes.CDLL(mkl_rt)
-        else:
-            for mkl_rt_name in ['libmkl_rt.so', 'mkl_rt.1.dll', 'mkl_rt.dll', 'libmkl_rt.dylib', 'libmkl_rt.so.1']:
+        # If we can't find mkl_rt with find_library, we search the directory
+        # tree, using a few assumptions:
+        # - the shared library can be found in a subdirectory of sys.prefix
+        #   https://docs.python.org/3.9/library/sys.html#sys.prefix
+        # - either in `lib` (linux and macOS) or `Library\bin` (windows)
+        # - if there are multiple matches for `mkl_rt`, try shorter paths
+        #   first
+        if mkl_rt is None:
+            mkl_rt_path = sorted(
+                glob.glob(f'{sys.prefix}/[Ll]ib*/**/*mkl_rt*', recursive=True),
+                key=len
+            )
+            for path in mkl_rt_path:
                 try:
-                    self.libmkl = ctypes.CDLL(mkl_rt_name)
+                    self.libmkl = ctypes.CDLL(path)
                     break
                 except (OSError, ImportError):
                     pass
 
             if self.libmkl is None:
-                mkl_rt_path = glob.glob(f'{sys.prefix}/**/*mkl_rt*', recursive=True)
-                for path in mkl_rt_path:
-                    try:
-                        self.libmkl = ctypes.CDLL(path)
-                        break
-                    except (OSError, ImportError):
-                        pass
-
-            if self.libmkl is None:
-                raise ImportError('mkl_rt not found')
+                raise ImportError('Shared library mkl_rt not found')
+        else:
+            self.libmkl = ctypes.CDLL(mkl_rt)
 
         self._mkl_pardiso = self.libmkl.pardiso
 
