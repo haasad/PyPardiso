@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pypardiso',
-    version="0.3.3",
+    version="0.4.0",
     packages=['pypardiso'],
     install_requires=['mkl', 'numpy', 'scipy'],
     author="Adrian Haas",
