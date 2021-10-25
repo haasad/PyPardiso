@@ -4,7 +4,7 @@
 
 PyPardiso is a python package to solve large sparse linear systems of equations with the [Intel oneAPI Math Kernel Library PARDISO solver](https://www.intel.com/content/www/us/en/develop/documentation/onemkl-developer-reference-fortran/top/sparse-solver-routines/onemkl-pardiso-parallel-direct-sparse-solver-iface.html), a shared-memory multiprocessing parallel direct sparse solver.
 
-PyPardiso provides the same functionality as SciPy's [scipy.sparse.linalg.spsolve](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.spsolve.html#scipy.sparse.linalg.spsolve) for solving the sparse linear system `Ax=b`. But in many cases it is significantly faster than SciPy's built-in single-threaded SuperLU solver.
+PyPardiso provides the same functionality as SciPy's [scipy.sparse.linalg.spsolve](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.spsolve.html#scipy.sparse.linalg.spsolve) for solving the sparse linear system `Ax=b`. However in many cases it is significantly faster than SciPy's built-in single-threaded SuperLU solver.
 
 PyPardiso is not a python interface to the PARDISO Solver from the [PARDISO 7.2 Solver Project](https://www.pardiso-project.org/) and it also doesn't currently support complex numbers. Check out [JuliaSparse/Pardiso.jl](https://github.com/JuliaSparse/Pardiso.jl/) for these more advanced use cases.
 
@@ -23,8 +23,27 @@ pip install pypardiso
 ```
 
 ## Basic usage
-PyPardiso provides a `spsolve` and a `factorized` method that are significantly faster than their counterparts in [scipy.sparse.linalg](https://docs.scipy.org/doc/scipy-0.18.1/reference/sparse.linalg.html).
-```
->>> from pypardiso import spsolve
->>> x = spsolve(A,b)
+
+```python
+In [1]: import pypardiso
+
+In [2]: import numpy as np
+
+In [3]: import scipy.sparse as sp
+
+In [4]: A = sp.rand(10, 10, density=0.5, format='csc')
+
+In [5]: A
+Out[5]:
+<10x10 sparse matrix of type '<class 'numpy.float64'>'
+	with 50 stored elements in Compressed Sparse Column format>
+
+In [6]: b = np.random.rand(10)
+
+In [7]: x = pypardiso.spsolve(A, b)
+
+In [8]: x
+Out[8]:
+array([ 0.02918389,  0.59629935,  0.33407289, -0.48788966,  3.44508841,
+        0.52565687, -0.48420646,  0.22136413, -0.95464127,  0.58297397])
 ```
