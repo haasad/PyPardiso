@@ -31,12 +31,12 @@ In [2]: import numpy as np
 
 In [3]: import scipy.sparse as sp
 
-In [4]: A = sp.rand(10, 10, density=0.5, format='csc')
+In [4]: A = sp.rand(10, 10, density=0.5, format='csr')
 
 In [5]: A
 Out[5]:
 <10x10 sparse matrix of type '<class 'numpy.float64'>'
-	with 50 stored elements in Compressed Sparse Column format>
+	with 50 stored elements in Compressed Sparse Row format>
 
 In [6]: b = np.random.rand(10)
 
