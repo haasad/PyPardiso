@@ -6,7 +6,7 @@ on:
     - master
     - conda-release
     tags:
-    - '*'
+    - 'v*'
 
 jobs:
   build-and-publish:
