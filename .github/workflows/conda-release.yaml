@@ -18,7 +18,7 @@ jobs:
       with:
         python-version: 3.8
         activate-environment: test
-        environment-file: environment.yml
+        environment-file: .github/environment.yml
         auto-activate-base: false
     - name: Install build tools
       shell: bash -l {0}

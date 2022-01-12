@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: test
-          environment-file: environment.yml
+          environment-file: .github/environment.yml
           auto-activate-base: false
       - name: Lint with flake8
         shell: bash -l {0}
