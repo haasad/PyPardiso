@@ -43,6 +43,28 @@ jobs:
           conda install pytest
           python -m pytest
 
+  conda-forge-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.8, 3.9]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up miniconda with python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: test
+          environment-file: .github/env-conda-forge.yml
+          auto-activate-base: false
+      - name: Test with pytest
+        shell: bash -l {0}
+        run: |
+          conda install pytest
+          python -m pytest
+
   pip-tests:
     runs-on: ${{ matrix.os }}
     strategy:
