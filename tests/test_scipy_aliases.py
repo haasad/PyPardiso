@@ -1,4 +1,5 @@
 # coding: utf-8
+import pytest
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse.linalg import spsolve as scipyspsolve
@@ -28,6 +29,7 @@ def test_basic_spsolve_matrix():
     np.testing.assert_array_almost_equal(xpp, xscipy)
 
 
+@pytest.mark.filterwarnings('ignore:splu requires CSC matrix format')
 def test_basic_factorized():
     ps.remove_stored_factorization()
     ps.free_memory()
@@ -39,6 +41,7 @@ def test_basic_factorized():
     np.testing.assert_array_almost_equal(xpp, xscipy)
 
 
+@pytest.mark.filterwarnings('ignore:Changing the sparsity structure')
 def test_factorized_modified_A():
     ps.remove_stored_factorization()
     ps.free_memory()
