@@ -53,3 +53,12 @@ def test_input_b_wrong_shape():
     b = np.append(b, 1)
     with pytest.raises(ValueError):
         basic_solve(A, b)
+
+
+def test_input_b_slice():
+    A, b = create_test_A_b_rand(matrix=True)
+    b1 = b[:, 0]
+    b2 = b[:, 0].copy()
+    x1 = ps.solve(A, b1)
+    x2 = ps.solve(A, b2)
+    np.testing.assert_array_equal(x1, x2)
