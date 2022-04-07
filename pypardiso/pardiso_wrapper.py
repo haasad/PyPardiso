@@ -232,8 +232,8 @@ class PyPardisoSolver:
                           SparseEfficiencyWarning)
             b = b.todense()
 
-        # pardiso expects fortran (column-major) order if b is a matrix
-        if b.ndim == 2:
+        # pardiso expects fortran (column-major) order for b
+        if not b.flags.f_contiguous:
             b = np.asfortranarray(b)
 
         if b.shape[0] != A.shape[0]:
