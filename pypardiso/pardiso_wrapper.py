@@ -1,11 +1,11 @@
 # coding: utf-8
-import os
 import sys
 import glob
 import ctypes
 import warnings
 import hashlib
 from ctypes.util import find_library
+from pathlib import Path
 
 import numpy as np
 import scipy.sparse as sp
@@ -73,11 +73,15 @@ class PyPardisoSolver:
         # - if there are multiple matches for `mkl_rt`, try shorter paths
         #   first
         if mkl_rt is None:
-            mkl_rt_path = sorted(
-                glob.glob(f'{sys.prefix}/[Ll]ib*/**/*mkl_rt*', recursive=True),
-                key=len
-            )
-            for path in mkl_rt_path:
+            globs = glob.glob(
+                f'{sys.prefix}/[Ll]ib*/**/*mkl_rt*', recursive=True)
+            if len(globs) == 0 and sys.platform == 'linux':
+                # one more try: pip may installed the MKL libraries in the
+                # user folder on Linux; see
+                # https://unix.stackexchange.com/a/407029
+                globs = glob.glob(f'{Path.home()}/.local/lib/*mkl_rt*')
+
+            for path in sorted(globs, key=len):
                 try:
                     self.libmkl = ctypes.CDLL(path)
                     break
