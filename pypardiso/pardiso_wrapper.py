@@ -4,8 +4,8 @@ import glob
 import ctypes
 import warnings
 import hashlib
+import site
 from ctypes.util import find_library
-from pathlib import Path
 
 import numpy as np
 import scipy.sparse as sp
@@ -69,18 +69,19 @@ class PyPardisoSolver:
         # tree, using a few assumptions:
         # - the shared library can be found in a subdirectory of sys.prefix
         #   https://docs.python.org/3.9/library/sys.html#sys.prefix
+        #   or in the user site in case of user-local installation like
+        #   `pip install --user`
+        #   https://peps.python.org/pep-0370/
+        #   https://docs.python.org/3/library/site.html#site.USER_BASE
         # - either in `lib` (linux and macOS) or `Library\bin` (windows)
         # - if there are multiple matches for `mkl_rt`, try shorter paths
         #   first
         if mkl_rt is None:
             globs = glob.glob(
-                f'{sys.prefix}/[Ll]ib*/**/*mkl_rt*', recursive=True)
-            if len(globs) == 0 and sys.platform == 'linux':
-                # one more try: pip may installed the MKL libraries in the
-                # user folder on Linux; see
-                # https://unix.stackexchange.com/a/407029
-                globs = glob.glob(f'{Path.home()}/.local/lib/*mkl_rt*')
-
+                f'{sys.prefix}/[Ll]ib*/**/*mkl_rt*', recursive=True
+            ) or glob.glob(
+                f'{site.USER_BASE}/[Ll]ib*/**/*mkl_rt*', recursive=True
+            )
             for path in sorted(globs, key=len):
                 try:
                     self.libmkl = ctypes.CDLL(path)
