@@ -1,10 +1,10 @@
 # coding: utf-8
-import os
 import sys
 import glob
 import ctypes
 import warnings
 import hashlib
+import site
 from ctypes.util import find_library
 
 import numpy as np
@@ -69,15 +69,20 @@ class PyPardisoSolver:
         # tree, using a few assumptions:
         # - the shared library can be found in a subdirectory of sys.prefix
         #   https://docs.python.org/3.9/library/sys.html#sys.prefix
+        #   or in the user site in case of user-local installation like
+        #   `pip install --user`
+        #   https://peps.python.org/pep-0370/
+        #   https://docs.python.org/3/library/site.html#site.USER_BASE
         # - either in `lib` (linux and macOS) or `Library\bin` (windows)
         # - if there are multiple matches for `mkl_rt`, try shorter paths
         #   first
         if mkl_rt is None:
-            mkl_rt_path = sorted(
-                glob.glob(f'{sys.prefix}/[Ll]ib*/**/*mkl_rt*', recursive=True),
-                key=len
+            globs = glob.glob(
+                f'{sys.prefix}/[Ll]ib*/**/*mkl_rt*', recursive=True
+            ) or glob.glob(
+                f'{site.USER_BASE}/[Ll]ib*/**/*mkl_rt*', recursive=True
             )
-            for path in mkl_rt_path:
+            for path in sorted(globs, key=len):
                 try:
                     self.libmkl = ctypes.CDLL(path)
                     break
