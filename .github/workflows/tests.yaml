@@ -29,6 +29,11 @@ jobs:
           activate-environment: test
           environment-file: environment.yml
           auto-activate-base: false
+      - name: Conda env info
+        shell: bash -l {0}
+        run: |
+          conda list
+          conda env export
       - name: Lint with flake8
         shell: bash -l {0}
         run: |
