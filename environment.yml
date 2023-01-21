@@ -6,3 +6,4 @@ dependencies:
   - mkl
   - numpy
   - scipy
+  - libblas * *mkl
