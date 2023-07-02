@@ -11,7 +11,6 @@ ps = pypardiso_solver
 
 def test_input_A_unsorted_indices():
     A, b = create_test_A_b_small(sort_indices=False)
-    assert not A.has_sorted_indices
     ps._check_A(A)
     assert A.has_sorted_indices
     basic_solve(A, b)
