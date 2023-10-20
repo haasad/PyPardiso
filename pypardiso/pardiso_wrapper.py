@@ -1,4 +1,5 @@
 # coding: utf-8
+import os
 import sys
 import glob
 import ctypes
@@ -58,8 +59,13 @@ class PyPardisoSolver:
     def __init__(self, mtype=11, phase=13, size_limit_storage=5e7):
 
         self.libmkl = None
+
+        # custom mkl_rt path in environment variable
+        mkl_rt = os.environ.get('PYPARDISO_MKL_RT')
+
         # Look for the mkl_rt shared library with ctypes.util.find_library
-        mkl_rt = find_library('mkl_rt')
+        if mkl_rt is None:
+            mkl_rt = find_library('mkl_rt')
         # also look for mkl_rt.1, Windows-specific, see
         # https://github.com/haasad/PyPardisoProject/issues/12
         if mkl_rt is None:
@@ -90,7 +96,10 @@ class PyPardisoSolver:
                     pass
 
             if self.libmkl is None:
-                raise ImportError('Shared library mkl_rt not found')
+                raise ImportError(
+                    'Shared library mkl_rt not found. '
+                    'Use environment variable PYPARDISO_MKL_RT to provide a custom path.'
+                )
         else:
             self.libmkl = ctypes.CDLL(mkl_rt)
 
