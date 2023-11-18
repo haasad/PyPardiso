@@ -1,11 +1,13 @@
-name: Release
+name: github-release
 on:
   push:
+    branches:
+      - master
     tags:
-      - v*
+      - 'v*'
 
 jobs:
-  dist:
+  github-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
