@@ -31,4 +31,4 @@ jobs:
           prerelease: "${{ contains(github.ref, '-rc') }}"
           # Ensure target branch for release is "master"
           commit: master
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_TOKEN }}
