@@ -1,12 +1,8 @@
 name: conda-release
 
 on:
-  push:
-    branches:
-    - master
-    - conda-release
-    tags:
-    - 'v*'
+  release:
+    types: [published]
 
 jobs:
   build-and-publish:
