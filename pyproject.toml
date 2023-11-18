@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pypardiso"
+authors = [
+    {name = "Adrian Haas"}
+]
+description = "Python interface to the Intel MKL Pardiso library to solve large sparse linear systems of equations"
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["pardiso", "sparse solver"]
+license = {file = "LICENSE.txt"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Mathematics"
+]
+dynamic = ["version", "dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.urls]
+Homepage = "https://github.com/haasad/PyPardisoProject"
+Repository = "https://github.com/haasad/PyPardisoProject.git"
+Changelog = "https://github.com/haasad/PyPardisoProject/releases"
+
+[tool.setuptools_scm]
