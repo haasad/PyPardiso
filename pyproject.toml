@@ -16,10 +16,12 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering :: Mathematics"
 ]
-dynamic = ["version", "dependencies"]
-
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+dynamic = ["version"]
+dependencies = [
+  "mkl",
+  "numpy",
+  "scipy"
+]
 
 [project.urls]
 Homepage = "https://github.com/haasad/PyPardisoProject"
