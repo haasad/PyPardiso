@@ -28,4 +28,5 @@ jobs:
     - name: Upload to haasad conda channel
       if: startsWith(github.ref, 'refs/tags/v')
       run: |
-        anaconda -t ${{ secrets.CONDA_TOKEN }} upload /usr/share/miniconda/envs/test/conda-bld/noarch/*.tar.bz2
+        echo "skipped release"
+        #        anaconda -t ${{ secrets.CONDA_TOKEN }} upload /usr/share/miniconda/envs/test/conda-bld/noarch/*.tar.bz2
