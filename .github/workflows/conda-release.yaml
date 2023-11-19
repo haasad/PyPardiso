@@ -22,7 +22,7 @@ jobs:
         conda install -c conda-forge conda-build anaconda-client conda-verify grayskull
     - name: Generate conda recipe
       run: |
-        grayskull pypi https://github.com/haasad/PyPardiso --sections {package,source,build,requirements,about}
+        grayskull pypi https://github.com/haasad/PyPardiso --sections {package,source,build,requirements,about} --strict-conda-forge
     - name: Build conda package
       run: |
         conda build PyPardiso
