@@ -12,8 +12,46 @@ on:
     - cron: '0 7 * * *'
 
 jobs:
+
+  generate-requirement-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: create empty environment.yml
+        run: |
+          cat > environment.yml <<EOF
+          name: pypardiso
+          channels:
+          - conda-forge
+          dependencies:
+          EOF
+      - name: generate requirements
+        uses: mikefarah/yq@master
+        with:
+          cmd: |
+            yq '.project.dependencies' pyproject.toml -oy > reqs.yml
+            cat reqs.yml >> environment.yml
+            yq '.[]' reqs.yml > requirements.txt
+      - name: Show requirement files
+        run: |
+          cat environment.yml
+          echo
+          cat requirements.txt
+      - name: Upload environment.yml
+        uses: actions/upload-artifact@v3
+        with:
+          name: environment.yml
+          path: environment.yml
+      - name: Upload requirements.txt
+        uses: actions/upload-artifact@v3
+        with:
+          name: requirements.txt
+          path: requirements.txt
+
+
   conda-tests:
     runs-on: ${{ matrix.os }}
+    needs: generate-requirement-files
     strategy:
       fail-fast: false
       matrix:
@@ -22,6 +60,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v3
+        with:
+          name: environment.yml
       - name: Set up miniconda with python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -50,6 +91,7 @@ jobs:
 
   pip-tests:
     runs-on: ${{ matrix.os }}
+    needs: generate-requirement-files
     strategy:
       fail-fast: false
       matrix:
@@ -60,6 +102,9 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - uses: actions/download-artifact@v3
+        with:
+          name: requirements.txt
       - name: Install dependencies
         run: |
           pip install -r requirements.txt

@@ -1,8 +1,0 @@
-name: pypardiso
-channels:
-  - conda-forge
-dependencies:
-  - python
-  - mkl
-  - numpy
-  - scipy
