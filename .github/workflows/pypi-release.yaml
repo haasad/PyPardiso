@@ -23,12 +23,8 @@ jobs:
           pip install build
       - name: Build
         run: python -m build
-
-      - name: skip
-        run: echo "skipped release"
-        #      - name: Upload to PyPI
-        #        if: startsWith(github.ref, 'refs/tags')
-        #        uses: pypa/gh-action-pypi-publish@release/v1
-        #        with:
-        #          user: __token__
-        #          password: ${{ secrets.PYPI_TOKEN }}
+      - name: Upload to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
