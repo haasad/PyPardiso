@@ -29,7 +29,7 @@ jobs:
         grayskull pypi https://github.com/haasad/PyPardiso --sections {package,source,build,requirements,about} --strict-conda-forge
     - name: setuptools-scm work-around
       run: |
-        VERSION=0.0.27
+        VERSION=$(grep "set version" PyPardiso/meta.yaml | cut -d '"' -f2)
         cat > PyPardiso/recipe_append.yaml <<EOF
         build:
           script_env:
