@@ -18,7 +18,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-  "mkl",
+  "mkl<2024",
   "numpy",
   "scipy"
 ]
