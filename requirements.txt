@@ -1,3 +1,0 @@
-mkl
-numpy
-scipy
