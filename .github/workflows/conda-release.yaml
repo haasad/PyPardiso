@@ -11,7 +11,7 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-    - name: Set up miniconda with python 3.9
+    - name: Set up miniconda
       uses: conda-incubator/setup-miniconda@v2
       with:
         channels: conda-forge
@@ -27,6 +27,15 @@ jobs:
     - name: Generate conda recipe
       run: |
         grayskull pypi https://github.com/haasad/PyPardiso --sections {package,source,build,requirements,about} --strict-conda-forge
+    - name: setuptools-scm work-around
+      run: |
+        VERSION=0.0.27
+        cat > PyPardiso/recipe_append.yaml <<EOF
+        build:
+          script_env:
+            - SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}
+        EOF
+        cat PyPardiso/recipe_append.yaml
     - name: Build conda package
       run: |
         conda build PyPardiso
