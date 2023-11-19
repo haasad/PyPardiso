@@ -16,6 +16,7 @@ jobs:
       with:
         python-version: 3.9
         activate-environment: build
+        auto-update-conda: true
     - name: Install build tools
       run: |
         conda install -c conda-forge conda-build anaconda-client conda-verify grayskull
