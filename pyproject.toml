@@ -24,8 +24,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/haasad/PyPardisoProject"
-Repository = "https://github.com/haasad/PyPardisoProject.git"
-Changelog = "https://github.com/haasad/PyPardisoProject/releases"
+Homepage = "https://github.com/haasad/PyPardiso"
+Repository = "https://github.com/haasad/PyPardiso.git"
+Changelog = "https://github.com/haasad/PyPardiso/releases"
 
 [tool.setuptools_scm]
+normalize = true
