@@ -41,4 +41,4 @@ jobs:
         conda build PyPardiso
     - name: Upload to haasad conda channel
       run: |
-        anaconda -t ${{ secrets.CONDA_TOKEN }} upload /usr/share/miniconda/envs/test/conda-bld/noarch/*.tar.bz2
+        anaconda -t ${{ secrets.CONDA_TOKEN }} upload /usr/share/miniconda/conda-bld/noarch/*.tar.bz2
