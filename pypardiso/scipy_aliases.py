@@ -38,7 +38,7 @@ def spsolve(A, b, factorize=True, squeeze=True, solver=pypardiso_solver, *args, 
         in two steps, therefore it is factorized by default. Subsequent calls to spsolve with the same matrix A
         will be drastically faster. This makes the "factorized" method obsolete, but it is kept for compatibility.
     """
-    if sp.isspmatrix_csc(A):
+    if sp.issparse(A) and A.format == "csc":
         A = A.tocsr()  # fixes issue with brightway2 technosphere matrix
 
     solver._check_A(A)

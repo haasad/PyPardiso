@@ -216,10 +216,10 @@ class PyPardisoSolver:
         if A.shape[0] != A.shape[1]:
             raise ValueError('Matrix A needs to be square, but has shape: {}'.format(A.shape))
 
-        if sp.isspmatrix_csr(A):
+        if sp.issparse(A) and A.format == "csr":
             self._solve_transposed = False
             self.set_iparm(12, 0)
-        elif sp.isspmatrix_csc(A):
+        elif sp.issparse(A) and A.format == "csc":
             self._solve_transposed = True
             self.set_iparm(12, 1)
         else:
@@ -241,7 +241,7 @@ class PyPardisoSolver:
             raise TypeError('PyPardiso currently only supports float64, but matrix A has dtype: {}'.format(A.dtype))
 
     def _check_b(self, A, b):
-        if sp.isspmatrix(b):
+        if sp.issparse(b):
             warnings.warn('PyPardiso requires the right-hand side b to be a dense array for maximum efficiency',
                           SparseEfficiencyWarning)
             b = b.todense()
