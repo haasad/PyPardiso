@@ -16,7 +16,7 @@ def test_input_b_sparse():
     bsparse = sp.csr_matrix(b)
     with pytest.warns(SparseEfficiencyWarning):
         x = ps.solve(A, bsparse)
-        np.testing.assert_array_almost_equal(A*x, b)
+        np.testing.assert_array_almost_equal(A @ x, b)
 
 
 def test_input_b_shape():

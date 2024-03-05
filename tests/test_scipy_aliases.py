@@ -29,7 +29,17 @@ def test_basic_spsolve_matrix():
     np.testing.assert_array_almost_equal(xpp, xscipy)
 
 
-@pytest.mark.filterwarnings("ignore:splu requires CSC matrix format")
+def test_basic_spsolve_sparray():
+    ps.remove_stored_factorization()
+    ps.free_memory()
+    A, b = create_test_A_b_rand(matrix=True)
+    A = sp.csr_array(A)
+    xpp = spsolve(A, b)
+    xscipy = scipyspsolve(A, b)
+    np.testing.assert_array_almost_equal(xpp, xscipy)
+
+
+@pytest.mark.filterwarnings("ignore:splu converted its input to CSC format")
 def test_basic_factorized():
     ps.remove_stored_factorization()
     ps.free_memory()

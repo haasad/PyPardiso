@@ -53,4 +53,4 @@ def create_test_A_b_rand(n=1000, density=0.05, matrix=False):
 
 def basic_solve(A, b):
     x = ps.solve(A, b)
-    np.testing.assert_array_almost_equal(A*x, b)
+    np.testing.assert_array_almost_equal(A @ x, b)
