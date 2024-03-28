@@ -27,6 +27,11 @@ jobs:
     - name: Generate conda recipe
       run: |
         grayskull pypi https://github.com/haasad/PyPardiso --sections {package,source,build,requirements,about} --strict-conda-forge
+    - name: Upload recipe
+      uses: actions/upload-artifact@v3
+      with:
+        name: meta.yaml
+        path: PyPardiso/meta.yaml
     - name: setuptools-scm work-around
       run: |
         VERSION=$(grep "set version" PyPardiso/meta.yaml | cut -d '"' -f2)
