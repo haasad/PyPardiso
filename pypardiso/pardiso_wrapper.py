@@ -271,8 +271,8 @@ class PyPardisoSolver:
         c_float64_p = ctypes.POINTER(ctypes.c_double)
 
         # 1-based indexing
-        ia = A.indptr + 1
-        ja = A.indices + 1
+        ia = A.indptr.astype(np.int32) + 1
+        ja = A.indices.astype(np.int32) + 1
 
         self._mkl_pardiso(self.pt.ctypes.data_as(ctypes.POINTER(self._pt_type[0])),  # pt
                           ctypes.byref(ctypes.c_int32(1)),  # maxfct
