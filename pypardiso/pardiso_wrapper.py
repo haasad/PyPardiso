@@ -142,6 +142,24 @@ class PyPardisoSolver:
         self.size_limit_storage = size_limit_storage
         self._solve_transposed = False
 
+        self._init_iparm() # manually setup iparm
+
+    def _init_iparm(self):
+        # https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2025-2/pardiso-iparm-parameter.html
+        self.iparm[0 ] = 1   # manually setting
+        self.iparm[1 ] = 103 # OMP version of fill-in reduce, maximum level of optimization (L=10)
+        self.iparm[5 ] = 0   # set to 1 if overwrite_b
+        self.iparm[7 ] = 2   # default 2-steps refinement
+        self.iparm[9 ] = 13  # set to 8 if symmetric
+        self.iparm[10] = 1   # set to 0 if symmetric
+        self.iparm[11] = 0   # Ax=b, no transpose
+        self.iparm[12] = 1   # enable matching for nonsymmetric
+        self.iparm[17] = 0   # disable nnz report
+        self.iparm[20] = 1   # default pivoting
+        self.iparm[23] = 0   # cannot use 10, idk why
+        self.iparm[34] = 1   # zero-based indexing
+        self.iparm[36] = 0   # CSR format
+
     def factorize(self, A):
         """
         Factorize the matrix A, the factorization will automatically be used if the same matrix A is passed to the
@@ -270,9 +288,13 @@ class PyPardisoSolver:
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
 
-        # 1-based indexing
-        ia = A.indptr + 1
-        ja = A.indices + 1
+        ia = A.indptr
+        ja = A.indices
+
+        if self.iparm[34] == 0:
+            # 1-based indexing
+            ia = ia + 1
+            ja = ja + 1
 
         self._mkl_pardiso(self.pt.ctypes.data_as(ctypes.POINTER(self._pt_type[0])),  # pt
                           ctypes.byref(ctypes.c_int32(1)),  # maxfct
