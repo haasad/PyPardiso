@@ -145,20 +145,20 @@ class PyPardisoSolver:
         self._init_iparm() # manually setup iparm
 
     def _init_iparm(self):
-        # https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2025-2/pardiso-iparm-parameter.html
-        self.iparm[0 ] = 1   # manually setting
-        self.iparm[1 ] = 103 # OMP version of fill-in reduce, maximum level of optimization (L=10)
-        self.iparm[5 ] = 0   # set to 1 if overwrite_b
-        self.iparm[7 ] = 2   # default 2-steps refinement
-        self.iparm[9 ] = 13  # set to 8 if symmetric
-        self.iparm[10] = 1   # set to 0 if symmetric
-        self.iparm[11] = 0   # Ax=b, no transpose
-        self.iparm[12] = 1   # enable matching for nonsymmetric
-        self.iparm[17] = 0   # disable nnz report
-        self.iparm[20] = 1   # default pivoting
-        self.iparm[23] = 0   # cannot use 10, idk why
-        self.iparm[34] = 1   # zero-based indexing
-        self.iparm[36] = 0   # CSR format
+        # https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/pardiso.html
+        self.set_iparm(1 , 1  ) # manually setting
+        self.set_iparm(2 , 103) # OMP version of fill-in reduce, maximum level of optimization (L=10)
+        self.set_iparm(6 , 0  ) # set to 1 if overwrite_b
+        self.set_iparm(8 , 2  ) # default 2-steps refinement
+        self.set_iparm(10, 13 ) # set to 8 if symmetric
+        self.set_iparm(11, 1  ) # set to 0 if symmetric
+        self.set_iparm(12, 0  ) # Ax=b, no transpose
+        self.set_iparm(13, 1  ) # enable matching for nonsymmetric
+        self.set_iparm(18, 0  ) # disable nnz report
+        self.set_iparm(21, 1  ) # default pivoting
+        self.set_iparm(24, 0  ) # cannot use 10, idk why
+        self.set_iparm(35, 1  ) # zero-based indexing
+        self.set_iparm(37, 0  ) # CSR format
 
     def factorize(self, A):
         """
@@ -291,7 +291,7 @@ class PyPardisoSolver:
         ia = A.indptr
         ja = A.indices
 
-        if self.iparm[34] == 0:
+        if self.get_iparm(35) == 0:
             # 1-based indexing
             ia = ia + 1
             ja = ja + 1
