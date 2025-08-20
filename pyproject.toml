@@ -11,7 +11,7 @@ description = "Python interface to the Intel MKL Pardiso library to solve large 
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = ["pardiso", "sparse solver"]
-license = {file = "LICENSE.txt"}
+license = {text = "BSD-3-Clause", file = "LICENSE.txt"}
 classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering :: Mathematics"
