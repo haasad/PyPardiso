@@ -10,6 +10,7 @@ on:
   schedule:
     # Run the tests once every 24 hours to catch dependency problems early
     - cron: '0 7 * * *'
+  workflow_dispatch: {}
 
 jobs:
 
