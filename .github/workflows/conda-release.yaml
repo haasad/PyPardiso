@@ -12,10 +12,10 @@ jobs:
         shell: bash -l {0}
     steps:
     - name: Set up miniconda
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@v3
       with:
         channels: conda-forge
-        auto-activate-base: true
+        auto-activate: true
         activate-environment: ""
     - name: update conda
       run: |

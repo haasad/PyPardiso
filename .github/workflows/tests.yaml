@@ -65,12 +65,11 @@ jobs:
         with:
           name: environment.yml
       - name: Set up miniconda with python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: test
           environment-file: environment.yml
-          auto-activate-base: false
       - name: Conda env info
         shell: bash -l {0}
         run: |
