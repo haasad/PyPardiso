@@ -39,12 +39,12 @@ jobs:
           echo
           cat requirements.txt
       - name: Upload environment.yml
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: environment.yml
           path: environment.yml
       - name: Upload requirements.txt
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: requirements.txt
           path: requirements.txt
@@ -61,7 +61,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v5
         with:
           name: environment.yml
       - name: Set up miniconda with python ${{ matrix.python-version }}
@@ -111,7 +111,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v5
         with:
           name: requirements.txt
       - name: Install dependencies

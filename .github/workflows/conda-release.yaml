@@ -28,7 +28,7 @@ jobs:
       run: |
         grayskull pypi https://github.com/haasad/PyPardiso --sections {package,source,build,requirements,about} --strict-conda-forge
     - name: Upload recipe
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v5
       with:
         name: meta.yaml
         path: PyPardiso/meta.yaml
