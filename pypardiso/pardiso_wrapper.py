@@ -142,6 +142,24 @@ class PyPardisoSolver:
         self.size_limit_storage = size_limit_storage
         self._solve_transposed = False
 
+        self._init_iparm() # manually setup iparm
+
+    def _init_iparm(self):
+        # https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-fortran/2025-2/pardiso-iparm-parameter.html
+        self.set_iparm(1 , 1  ) # manually setting
+        self.set_iparm(2 , 103) # OMP version of fill-in reduce, maximum level of optimization (L=10)
+        self.set_iparm(6 , 0  ) # set to 1 if overwrite_b
+        self.set_iparm(8 , 2  ) # default 2-steps refinement
+        self.set_iparm(10, 13 ) # set to 8 if symmetric
+        self.set_iparm(11, 1  ) # set to 0 if symmetric
+        self.set_iparm(12, 0  ) # Ax=b, no transpose
+        self.set_iparm(13, 1  ) # enable matching for nonsymmetric
+        self.set_iparm(18, 0  ) # disable nnz report
+        self.set_iparm(21, 1  ) # default pivoting
+        self.set_iparm(24, 0  ) # cannot use 10, idk why
+        self.set_iparm(35, 1  ) # zero-based indexing
+        self.set_iparm(37, 0  ) # CSR format
+
     def factorize(self, A):
         """
         Factorize the matrix A, the factorization will automatically be used if the same matrix A is passed to the
@@ -163,7 +181,7 @@ class PyPardisoSolver:
         b = np.zeros((A.shape[0], 1))
         self._call_pardiso(A, b)
 
-    def solve(self, A, b):
+    def solve(self, A, b, overwrite_b: bool=False):
         """
         solve Ax=b for x
 
@@ -178,14 +196,24 @@ class PyPardisoSolver:
         """
 
         self._check_A(A)
-        b = self._check_b(A, b)
+        b_fcontig = self._check_b(A, b)
+
+        iparm6 = self.get_iparm(6)
+        if not(b_fcontig is b):
+            if overwrite_b:
+                warnings.warn('overwrite_b takes no effect: input b is not f_contiguous or the dtype is not compatible',
+                               SparseEfficiencyWarning)
+            overwrite_b = True # already made a copy of b, safe to overwrite
+
+        if overwrite_b:
+            self.set_iparm(6, 1) # overwrite
 
         if self._is_already_factorized(A):
             self.set_phase(33)
         else:
             self.set_phase(13)
 
-        x = self._call_pardiso(A, b)
+        x = self._call_pardiso(A, b_fcontig, overwrite_b=overwrite_b)
 
         # it is possible to call the solver with empty columns, but computationally expensive to check this
         # beforehand, therefore only the result is checked for infinite elements.
@@ -193,6 +221,7 @@ class PyPardisoSolver:
         #    warnings.warn('The result contains infinite elements. Make sure that matrix A contains no empty columns.',
         #                  PyPardisoWarning)
         # --> this check doesn't work consistently, maybe add an advanced input check method for A
+        self.set_iparm(6, iparm6) # revert
 
         return x
 
@@ -263,16 +292,21 @@ class PyPardisoSolver:
 
         return b
 
-    def _call_pardiso(self, A, b):
+    def _call_pardiso(self, A, b, overwrite_b: bool=False):
 
-        x = np.zeros_like(b)
+        # PARDISO will fill x with 0 if iparm(6)=1
+        x = np.empty_like(b) if overwrite_b else np.zeros_like(b)
         pardiso_error = ctypes.c_int32(0)
         c_int32_p = ctypes.POINTER(ctypes.c_int32)
         c_float64_p = ctypes.POINTER(ctypes.c_double)
 
-        # 1-based indexing
-        ia = A.indptr + 1
-        ja = A.indices + 1
+        ia = A.indptr
+        ja = A.indices
+
+        if self.get_iparm(35) == 0:
+            # 1-based indexing
+            ia = ia + 1
+            ja = ja + 1
 
         self._mkl_pardiso(self.pt.ctypes.data_as(ctypes.POINTER(self._pt_type[0])),  # pt
                           ctypes.byref(ctypes.c_int32(1)),  # maxfct
@@ -294,7 +328,7 @@ class PyPardisoSolver:
         if pardiso_error.value != 0:
             raise PyPardisoError(pardiso_error.value)
         else:
-            return np.ascontiguousarray(x)  # change memory-layout back from fortran to c order
+            return b if overwrite_b else x # no need to force c_contiguous return
 
     def get_iparms(self):
         """Returns a dictionary of iparms"""
