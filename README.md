@@ -5,11 +5,11 @@ PyPardiso is a python package to solve large sparse linear systems of equations 
 
 PyPardiso provides the same functionality as SciPy's [scipy.sparse.linalg.spsolve](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.spsolve.html#scipy.sparse.linalg.spsolve) for solving the sparse linear system `Ax=b`. However in many cases it is significantly faster than SciPy's built-in single-threaded SuperLU solver.
 
-PyPardiso is not a python interface to the PARDISO Solver from the [PARDISO 7.2 Solver Project](https://www.pardiso-project.org/) and it also doesn't currently support complex numbers. Check out [JuliaSparse/Pardiso.jl](https://github.com/JuliaSparse/Pardiso.jl/) for these more advanced use cases.
+PyPardiso is not a python interface to the PARDISO Solver from the [PARDISO 7.2 Solver Project](https://www.pardiso-project.org/) and it also doesn't currently support complex numbers. Check out [JuliaSparse/Pardiso.jl](https://github.com/JuliaSparse/Pardiso.jl/) for these more advanced use cases. For macOS users we recommend [scikit-umfpack](https://github.com/scikit-umfpack/scikit-umfpack) as an alternative fast solver, since MKL is not available on Apple silicon.
 
 ## Installation
 
-PyPardiso runs on Linux, Windows and MacOS. It can be installed with __conda__ or __pip__. It is recommended to install PyPardiso using a virtual environment.
+PyPardiso runs on Linux and Windows. It can be installed with __conda__ or __pip__. It is recommended to install PyPardiso using a virtual environment.
 
 conda-forge | PyPI
 :---:|:---:
