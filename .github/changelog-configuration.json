@@ -6,11 +6,11 @@
             "labels": ["enhancement", "feature"]
         },
         {
-            "title": "## 🛠️ Minor Changes",
+            "title": "## 🛠️ Changes",
             "labels": ["change"]
         },
         {
-            "title": "## 🔎 Breaking Changes",
+            "title": "## 🚧 Breaking Changes",
             "labels": ["breaking"]
         },
         {
@@ -24,6 +24,10 @@
         {
             "title": "## 🔗 Dependency Updates",
             "labels": ["dependency"]
+        },
+        {
+            "title": "## 🚚 CI and Packaging",
+            "labels": ["ci"]
         }
     ],
     "template": "${{CATEGORIZED_COUNT}} changes since ${{FROM_TAG}}\n\n${{CHANGELOG}}"
