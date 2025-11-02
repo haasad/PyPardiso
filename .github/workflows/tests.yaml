@@ -90,12 +90,6 @@ jobs:
         run: |
           conda install pytest
           python -m pytest
-      - name: invert failure
-        if: ${{ steps.tests.outcome != 'success' && matrix.os == 'windows-latest' }}
-        run: exit 0
-      - name: invert success
-        if: ${{ steps.tests.outcome == 'success' && matrix.os == 'windows-latest' }}
-        run: exit 1
 
   pip-tests:
     runs-on: ${{ matrix.os }}
