@@ -51,6 +51,14 @@ def create_test_A_b_rand(n=1000, density=0.05, matrix=False):
     return A, b
 
 
+def create_test_A_b_array(n=1000, density=0.05):
+    np.random.seed(27)
+    A = sp.coo_array(sp.random_array((n, n), density=density) + sp.eye_array(n))
+    b = np.random.rand(n, 5)
+
+    return A, b
+
+
 def basic_solve(A, b):
     x = ps.solve(A, b)
     np.testing.assert_array_almost_equal(A @ x, b)
