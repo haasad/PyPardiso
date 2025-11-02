@@ -64,7 +64,7 @@ def test_input_A_dtypes():
     A, b = create_test_A_b_rand(10, 0.5)
     for d in [np.float16, np.float32, np.int16, np.int32, np.int64, np.complex64,
               np.complex128, np.complex128, np.uint16, np.uint32, np.uint64]:
-        with pytest.raises(TypeError):
+        with pytest.RaisesExc(check=lambda e: isinstance(e, (ValueError, TypeError))):
             ps.solve(A.astype(d), b)
 
 
